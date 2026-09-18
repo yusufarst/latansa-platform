@@ -19,7 +19,7 @@ export default async function PublicCatalogPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const params = await searchParams;
-  
+
   const specs: Record<string, string[]> = {};
   for (const [key, value] of Object.entries(params)) {
     if (['q', 'category', 'brand', 'sort', 'page'].includes(key)) continue;
@@ -54,7 +54,7 @@ export default async function PublicCatalogPage({
     if (filters.brandSlug) search.set("brand", filters.brandSlug);
     if (filters.sort && filters.sort !== "default") search.set("sort", filters.sort);
     if (page > 1) search.set("page", page.toString());
-    
+
     for (const [key, values] of Object.entries(specs)) {
       for (const v of values) {
         search.append(key, v);
@@ -68,7 +68,7 @@ export default async function PublicCatalogPage({
         for (const v of vals) search.append(key, v);
       }
     }
-    
+
     // Reset to page 1 if changing filters
     if (!updates.page && (updates.category !== undefined || updates.brand !== undefined || updates.q !== undefined || Object.keys(updates).some(k => !['page', 'sort'].includes(k)))) {
       search.delete("page");
@@ -102,10 +102,10 @@ export default async function PublicCatalogPage({
         <aside className="w-full md:w-64 shrink-0 space-y-8">
           <form action="/products" method="GET" className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input 
-              type="search" 
-              name="q" 
-              placeholder="Search products..." 
+            <Input
+              type="search"
+              name="q"
+              placeholder="Search products..."
               defaultValue={filters.search}
               className="pl-9 bg-white"
             />
@@ -118,8 +118,8 @@ export default async function PublicCatalogPage({
             <h3 className="font-semibold mb-3 flex items-center"><SlidersHorizontal className="w-4 h-4 mr-2"/> Categories</h3>
             <ul className="space-y-1.5">
               <li>
-                <Link 
-                  href={buildUrl({ category: null })} 
+                <Link
+                  href={buildUrl({ category: null })}
                   className={`block px-3 py-2 rounded-md text-sm transition-colors ${!filters.categorySlug ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-600'}`}
                 >
                   All Categories
@@ -127,8 +127,8 @@ export default async function PublicCatalogPage({
               </li>
               {categories.map(c => (
                 <li key={c.slug}>
-                  <Link 
-                    href={buildUrl({ category: c.slug })} 
+                  <Link
+                    href={buildUrl({ category: c.slug })}
                     className={`block px-3 py-2 rounded-md text-sm transition-colors ${filters.categorySlug === c.slug ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-600'}`}
                   >
                     {c.name}
@@ -142,8 +142,8 @@ export default async function PublicCatalogPage({
             <h3 className="font-semibold mb-3 flex items-center"><SlidersHorizontal className="w-4 h-4 mr-2"/> Brands</h3>
             <ul className="space-y-1.5">
               <li>
-                <Link 
-                  href={buildUrl({ brand: null })} 
+                <Link
+                  href={buildUrl({ brand: null })}
                   className={`block px-3 py-2 rounded-md text-sm transition-colors ${!filters.brandSlug ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-600'}`}
                 >
                   All Brands
@@ -151,8 +151,8 @@ export default async function PublicCatalogPage({
               </li>
               {brands.map(b => (
                 <li key={b.slug}>
-                  <Link 
-                    href={buildUrl({ brand: b.slug })} 
+                  <Link
+                    href={buildUrl({ brand: b.slug })}
                     className={`block px-3 py-2 rounded-md text-sm transition-colors ${filters.brandSlug === b.slug ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-600'}`}
                   >
                     {b.name}
@@ -161,7 +161,7 @@ export default async function PublicCatalogPage({
               ))}
             </ul>
           </div>
-          
+
           {Object.entries(specFilters).map(([specKey, values]) => (
             <div key={specKey}>
               <h3 className="font-semibold mb-3 flex items-center"><SlidersHorizontal className="w-4 h-4 mr-2"/> {specKey}</h3>
@@ -172,8 +172,8 @@ export default async function PublicCatalogPage({
                   const nextVals = isActive ? currentVals.filter(v => v !== val) : [...currentVals, val];
                   return (
                     <li key={val}>
-                      <Link 
-                        href={buildUrl({ [specKey]: nextVals.length > 0 ? nextVals : null })} 
+                      <Link
+                        href={buildUrl({ [specKey]: nextVals.length > 0 ? nextVals : null })}
                         className={`block px-3 py-2 rounded-md text-sm transition-colors ${isActive ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-600'}`}
                       >
                         <div className="flex items-center gap-2">
@@ -195,7 +195,7 @@ export default async function PublicCatalogPage({
             <span className="text-sm font-medium text-slate-600">
               Showing {products.length > 0 ? (page - 1) * filters.pageSize! + 1 : 0} - {Math.min(page * filters.pageSize!, total)} of {total} products
             </span>
-            
+
             <CatalogSort currentSort={filters.sort} />
           </div>
 
@@ -204,7 +204,7 @@ export default async function PublicCatalogPage({
               <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-2">No products found</h3>
               <p className="text-slate-500 mb-6 max-w-md mx-auto">
-                We couldn&apos;t find any products matching your current filters. 
+                We couldn&apos;t find any products matching your current filters.
                 Try adjusting your search or clearing filters.
               </p>
               <Link href="/products" className={buttonVariants({ variant: "default" })}>
@@ -219,8 +219,8 @@ export default async function PublicCatalogPage({
                     <Link href={`/products/${product.slug}`} className="flex flex-col flex-1 focus:outline-none">
                       <div className="aspect-square bg-white relative p-4 flex items-center justify-center border-b">
                         {product.images?.[0] ? (
-                          <img 
-                            src={product.images[0].url} 
+                          <img
+                            src={product.images[0].url}
                             alt={product.images[0].altText || product.name}
                             className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
                           />
@@ -260,18 +260,18 @@ export default async function PublicCatalogPage({
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="mt-12 flex items-center justify-center gap-2">
-                  <Link 
+                  <Link
                     href={page > 1 ? buildUrl({ page: (page - 1).toString() }) : '#'}
                     className={`flex items-center justify-center w-10 h-10 rounded-md border ${page <= 1 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:bg-slate-50'}`}
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
-                  
+
                   <div className="flex items-center gap-1 mx-4">
                     <span className="text-sm font-medium">Page {page} of {totalPages}</span>
                   </div>
 
-                  <Link 
+                  <Link
                     href={page < totalPages ? buildUrl({ page: (page + 1).toString() }) : '#'}
                     className={`flex items-center justify-center w-10 h-10 rounded-md border ${page >= totalPages ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:bg-slate-50'}`}
                   >

@@ -82,6 +82,13 @@ COMPLETED:
   - atomicity for specification updates verified
   - E2E auth timeouts documented/bypassed for CI
   - clean final quality gates (lint, test, build) passed
+- Final Small Acceptance Fixes before push:
+  - restored style.spec.ts and db-transaction.test.ts tests
+  - fixed flaky E2E selectors in admin.spec.ts
+  - cleaned all trailing whitespaces
+  - fixed Docker production build crash in sitemap.ts
+  - proved Docker standalone runtime and CSS styling acceptances pass
+
 
 CURRENT TASK:
 - Implement inventory ledger logic and internal warehouse layout

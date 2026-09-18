@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { vi } from 'vitest';
 
 vi.mock('next/headers', () => ({
@@ -21,7 +22,7 @@ describe('INVENTORY_ADMIN RBAC Runtime Proof', () => {
   it('should deny INVENTORY_ADMIN from mutating product master data', async () => {
     // 1. Find the role ID for INVENTORY_ADMIN
     const [invAdminRole] = await db.select().from(roles).where(eq(roles.code, 'INVENTORY_ADMIN'));
-    
+
     if (!invAdminRole) {
       console.warn("Skipping test because INVENTORY_ADMIN role does not exist. Run seed script.");
       return;

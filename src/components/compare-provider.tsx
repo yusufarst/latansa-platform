@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import Link from "next/link";
 import { Scale } from "lucide-react";
 import { Button, buttonVariants } from "./ui/button";
