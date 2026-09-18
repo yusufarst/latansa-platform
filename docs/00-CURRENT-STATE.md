@@ -2,7 +2,7 @@ PROJECT:
 LATANSA Platform
 
 PHASE:
-AUTH/RBAC RUNTIME VERIFIED / PRODUCT CATALOG NEXT
+PRODUCT MANAGEMENT & PUBLIC CATALOG VERIFIED / INVENTORY NEXT
 
 COMPLETED:
 - GitHub repository created and connected
@@ -62,20 +62,27 @@ COMPLETED:
 - Docker application image build verified
 - Node 22 runtime baseline established
 - LATANSA app and PostgreSQL integration verified in Docker Compose
+- Product domain database schema and migrations generated
+- Product, Category, and Brand internal RBAC services with audit logs
+- Public catalog read-only query services with DTO projections
+- Internal product management UI layout and scaffolding
+- Premium public corporate homepage and dynamic catalog storefront
+- WhatsApp conversion tracking API route
+- Deterministic catalog data seeding script verified
+- Internal product management (Create/Edit) forms implemented and type-checked
+- Public catalog logic moved to client components for hydration safety
+- Catalog layout fixed and image placeholders standardized
+- Playwright E2E tests added and passed for Auth and Catalog flows
+
 CURRENT TASK:
-- product and public catalog vertical slice
+- implement inventory ledger logic and internal warehouse layout
 
 NEXT:
-- categories
-- brands
-- products
-- dynamic specifications
-- product images
-- public catalog
-- search/filter
-- product detail
-- compare
-- WhatsApp conversion tracking
+- ledger entries
+- warehouse management
+- internal inventory tracking
+- stock adjustments
+- transactions (in/out)
 
 KNOWN ISSUES:
 - production VPS credentials and production environment are intentionally not configured yet
