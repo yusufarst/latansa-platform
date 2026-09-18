@@ -60,6 +60,8 @@ COMPLETED:
 - session revocation runtime-verified
 - auth audit events runtime-verified
 - Docker application image build verified
+- Node 22 runtime baseline established
+- LATANSA app and PostgreSQL integration verified in Docker Compose
 CURRENT TASK:
 - product and public catalog vertical slice
 
@@ -77,7 +79,6 @@ NEXT:
 
 KNOWN ISSUES:
 - production VPS credentials and production environment are intentionally not configured yet
-- Next.js 16 Turbopack has a font-resolution module error when building inside node:20-alpine Docker image (unrelated to auth)
 
 BLOCKERS:
 - none

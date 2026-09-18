@@ -16,3 +16,4 @@
 - **DEC-014**: Vertical-slice implementation workflow.
 - **DEC-015**: Credential auth is first-party; opaque server-side sessions in PostgreSQL.
 - **DEC-016**: Password hashing uses bcrypt; raw session tokens never stored in DB.
+- **DEC-017**: Node 22 is the runtime baseline.
