@@ -46,6 +46,11 @@ COMPLETED:
 - hardened session API surface
 - expanded auth security unit coverage
 - incremental auth-hardening migration generated
+- Docker Desktop / WSL2 runtime verified
+- isolated LATANSA PostgreSQL Docker runtime established
+- LATANSA PostgreSQL mapped to dedicated local host port
+- existing Windows PostgreSQL preserved untouched
+- local PostgreSQL container health verified
 
 CURRENT TASK:
 - product and public catalog vertical slice
@@ -63,8 +68,9 @@ NEXT:
 - WhatsApp conversion tracking
 
 KNOWN ISSUES:
+- auth migrations have not yet been executed on LATANSA local PostgreSQL
+- auth DB integration/runtime verification still pending
 - production VPS credentials and production environment are intentionally not configured yet
-- safe local PostgreSQL unavailable, DB migration and DB integration tests were not executed
 
 BLOCKERS:
 - none
