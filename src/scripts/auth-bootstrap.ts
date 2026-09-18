@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { getBootstrapEnv } from "../config/env";
 import { db } from "../db";
 import { roles, users } from "../modules/auth/db/schema";
