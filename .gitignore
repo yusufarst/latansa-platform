@@ -48,3 +48,11 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
+
+# all environment variants except template
+.env.*
+!.env.example
+
+# local agent/MCP credentials
+.agents/mcp_config.json
+.agents/*.local.json

@@ -1,6 +1,6 @@
 # Conceptual Data Model
 
-This document outlines the conceptual entities and their relationships. 
+This document outlines the conceptual entities and their relationships.
 *Note: Do not create database migrations based on this conceptual model yet.*
 
 ## Auth & Access

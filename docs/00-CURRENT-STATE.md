@@ -2,20 +2,26 @@ PROJECT:
 LATANSA Platform
 
 PHASE:
-BOOTSTRAP
+DEVELOPMENT TOOLING SETUP
+
+LAST VERIFIED COMMIT:
+71c5cf85ee58d4825db630e963057b51d803516e
 
 COMPLETED:
 - GitHub repository created
 - local repository connected
+- canonical project documentation created
+- initial source-of-truth commit pushed to origin/main
 
 CURRENT TASK:
-- canonical project specification/bootstrap
+- configure development MCP/tools and agent skills
 
 NEXT:
-- review bootstrap documentation
-- commit canonical project foundation
-- install/configure selected development MCP/tools
-- bootstrap application foundation
+- configure selected MCP/tools
+- create LATANSA local agent skills/rules
+- bootstrap Next.js application foundation
+- configure PostgreSQL/Drizzle/Docker
+- implement authentication and RBAC
 
 KNOWN ISSUES:
 - application source code not initialized yet
