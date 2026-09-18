@@ -2,9 +2,6 @@ import { z } from "zod";
 
 const serverSchema = z.object({
   DATABASE_URL: z.string().url(),
-  POSTGRES_DB: z.string().min(1),
-  POSTGRES_USER: z.string().min(1),
-  POSTGRES_PASSWORD: z.string().min(1),
   APP_URL: z.string().url(),
   PUBLIC_SITE_URL: z.string().url().optional(),
   SESSION_SECRET: z.string().min(16),
@@ -22,9 +19,6 @@ const clientSchema = z.object({
 
 const processEnv = {
   DATABASE_URL: process.env.DATABASE_URL,
-  POSTGRES_DB: process.env.POSTGRES_DB,
-  POSTGRES_USER: process.env.POSTGRES_USER,
-  POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
   APP_URL: process.env.APP_URL,
   PUBLIC_SITE_URL: process.env.PUBLIC_SITE_URL,
   SESSION_SECRET: process.env.SESSION_SECRET,

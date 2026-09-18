@@ -9,12 +9,17 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - APP_URL=${APP_URL}
+      - PUBLIC_SITE_URL=${PUBLIC_SITE_URL}
       - SESSION_SECRET=${SESSION_SECRET}
       - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - SUPER_ADMIN_EMAIL=${SUPER_ADMIN_EMAIL}
+      - SUPER_ADMIN_INITIAL_PASSWORD=${SUPER_ADMIN_INITIAL_PASSWORD}
       - UPLOAD_DIR=${UPLOAD_DIR:-/app/uploads}
       - NEXT_PUBLIC_WHATSAPP_NUMBER=${NEXT_PUBLIC_WHATSAPP_NUMBER}
+      - PUBLIC_DOMAIN=${PUBLIC_DOMAIN}
+      - INTERNAL_DOMAIN=${INTERNAL_DOMAIN}
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     depends_on:
       postgres:
         condition: service_healthy
