@@ -106,7 +106,7 @@ describe('Real Postgres Atomicity Test', () => {
       .where(eq(auditLogs.entityId, product.id))
       .orderBy(desc(auditLogs.createdAt))
       .limit(1);
-    
+
     // The only successful one should be the creation
     expect(logs[0]?.action).toBe('PRODUCT_CREATED');
   });
