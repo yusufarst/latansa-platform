@@ -45,7 +45,7 @@ export default async function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/products" className={buttonVariants({ size: "lg", className: "bg-white text-slate-900 hover:bg-slate-100" })}>Browse Catalog</Link>
-            <Link href="/contact" className={buttonVariants({ size: "lg", variant: "outline", className: "text-slate-900 dark:text-white border-white hover:bg-white/10" })}>Contact Sales</Link>
+            <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/[^0-9]/g, '') || '628111111111'}`} target="_blank" rel="noopener noreferrer" className={buttonVariants({ size: "lg", variant: "outline", className: "text-slate-900 dark:text-white border-white hover:bg-white/10" })}>Contact Sales</a>
           </div>
         </div>
       </section>
@@ -62,7 +62,7 @@ export default async function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featured.map((product: PublicProductDTO) => (
-            <div key={product.id} className="group flex flex-col bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div key={product.slug} className="group flex flex-col bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               <div className="aspect-square bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center p-4">
                 {product.images?.[0] ? (
                   <img src={product.images[0].url} alt={product.name} className="max-w-full max-h-full object-contain" />

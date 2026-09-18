@@ -3,7 +3,7 @@ import { readFile } from "fs/promises";
 import { join } from "path";
 import { db } from "@/db";
 import { productImages, products } from "@/modules/products/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export async function GET(
   req: NextRequest,
@@ -43,7 +43,14 @@ export async function GET(
     if (product.status !== "PUBLISHED") {
       const { getCurrentSession } = await import("@/modules/auth/authorization");
       const sessionResult = await getCurrentSession();
-      if (!sessionResult) {
+      if (!sessionResult || !sessionResult.user) {
+        return new NextResponse("Forbidden - Draft Product", { status: 403 });
+      }
+      
+      const { roles } = await import("@/modules/auth/db/schema");
+      const [roleRecord] = await db.select().from(roles).where(eq(roles.id, sessionResult.user.roleId));
+      
+      if (!roleRecord || (roleRecord.code !== "SUPER_ADMIN" && roleRecord.code !== "PRODUCT_SALES_ADMIN")) {
         return new NextResponse("Forbidden - Draft Product", { status: 403 });
       }
     }

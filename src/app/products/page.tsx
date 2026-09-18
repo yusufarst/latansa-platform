@@ -126,7 +126,7 @@ export default async function PublicCatalogPage({
                 </Link>
               </li>
               {categories.map(c => (
-                <li key={c.id}>
+                <li key={c.slug}>
                   <Link 
                     href={buildUrl({ category: c.slug })} 
                     className={`block px-3 py-2 rounded-md text-sm transition-colors ${filters.categorySlug === c.slug ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-600'}`}
@@ -150,7 +150,7 @@ export default async function PublicCatalogPage({
                 </Link>
               </li>
               {brands.map(b => (
-                <li key={b.id}>
+                <li key={b.slug}>
                   <Link 
                     href={buildUrl({ brand: b.slug })} 
                     className={`block px-3 py-2 rounded-md text-sm transition-colors ${filters.brandSlug === b.slug ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-600'}`}
@@ -215,7 +215,7 @@ export default async function PublicCatalogPage({
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.map(product => (
-                  <Link key={product.id} href={`/products/${product.slug}`} className="group flex flex-col bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <Link key={product.slug} href={`/products/${product.slug}`} className="group flex flex-col bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                     <div className="aspect-square bg-white relative p-4 flex items-center justify-center border-b">
                       {product.images?.[0] ? (
                         <img 

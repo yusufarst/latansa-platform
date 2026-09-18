@@ -61,8 +61,7 @@ async function seed() {
   const brandData = [
     "Lenovo", "Dell", "HP", "Asus", 
     "Motorola", "Baofeng", "APC", 
-    "CyberPower", "Anker", "Belkin", 
-    "Ugreen", "TP-Link", "Cisco"
+    "Anker", "TP-Link", "Cisco"
   ];
 
   const brandMap = new Map<string, string>();
@@ -95,12 +94,12 @@ async function seed() {
     { name: "UV-5R Dual Band", brand: "Baofeng", cat: "Two-Way Radios", price: "500000", featured: false, mode: "QUANTITY", status: "PUBLISHED" },
     
     { name: "Smart-UPS 1500VA", brand: "APC", cat: "Power & Electrical Accessories", price: "8000000", featured: true, mode: "QUANTITY", status: "PUBLISHED" },
-    { name: "Value Pro 700VA", brand: "CyberPower", cat: "Power & Electrical Accessories", price: "1200000", featured: false, mode: "QUANTITY", status: "PUBLISHED" },
+    { name: "Value Pro 700VA", brand: "APC", cat: "Power & Electrical Accessories", price: "1200000", featured: false, mode: "QUANTITY", status: "PUBLISHED" },
     
     { name: "PowerCore 26800", brand: "Anker", cat: "Batteries", price: "1500000", featured: false, mode: "QUANTITY", status: "PUBLISHED" },
-    { name: "BoostCharge Pro", brand: "Belkin", cat: "Chargers & Power Adapters", price: "900000", featured: false, mode: "QUANTITY", status: "PUBLISHED" },
+    { name: "BoostCharge Pro", brand: "Anker", cat: "Chargers & Power Adapters", price: "900000", featured: false, mode: "QUANTITY", status: "PUBLISHED" },
     
-    { name: "Cat6 Ethernet Cable 5m", brand: "Ugreen", cat: "Cables", price: "150000", featured: false, mode: "QUANTITY", status: "PUBLISHED" },
+    { name: "Cat6 Ethernet Cable 5m", brand: "TP-Link", cat: "Cables", price: "150000", featured: false, mode: "QUANTITY", status: "PUBLISHED" },
     { name: "Archer AX73 Router", brand: "TP-Link", cat: "Networking", price: "2500000", featured: true, mode: "SERIALIZED", status: "PUBLISHED" },
     { name: "Catalyst 9200 Switch", brand: "Cisco", cat: "Networking", price: "45000000", featured: false, mode: "SERIALIZED", status: "PUBLISHED" },
     { name: "Enterprise Edge Router", brand: "Cisco", cat: "Networking", price: "85000000", featured: false, mode: "SERIALIZED", status: "DRAFT" }

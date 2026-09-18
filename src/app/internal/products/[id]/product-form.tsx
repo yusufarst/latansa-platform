@@ -1,14 +1,14 @@
 "use client";
 
 import { useActionState, useState, useEffect } from "react";
-import { createProductAction, updateProductAction, publishProductAction, archiveProductAction, unpublishProductAction, uploadImageAction, deleteImageAction, setPrimaryImageAction } from "@/modules/products/actions";
+import { createProductAction, updateProductAction, publishProductAction, archiveProductAction, unpublishProductAction, uploadImageAction, deleteImageAction, setPrimaryImageAction, updateImageMetadataAction, updateImageOrderAction } from "@/modules/products/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { generateSlug } from "@/modules/products/validations";
-import { Plus, Trash, Image as ImageIcon, Star, StarOff, Upload } from "lucide-react";
+import { Plus, Trash, Image as ImageIcon, Star, StarOff, Upload, ArrowUp, ArrowDown, Save } from "lucide-react";
 import { toast } from "sonner";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -105,6 +105,31 @@ export default function ProductForm({
     });
     
     e.target.value = ''; // Reset input
+  };
+
+  const handleUpdateAltText = async (imageId: string, altText: string) => {
+    if (!product?.id) return;
+    toast.promise(updateImageMetadataAction(imageId, product.id, { altText }), {
+      loading: "Saving alt text...",
+      success: "Alt text saved",
+      error: "Failed to save alt text"
+    });
+  };
+
+  const handleMoveImage = async (index: number, direction: 'up' | 'down') => {
+    if (!product?.id) return;
+    const newImages = [...images];
+    if (direction === 'up' && index > 0) {
+      [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    } else if (direction === 'down' && index < newImages.length - 1) {
+      [newImages[index + 1], newImages[index]] = [newImages[index], newImages[index + 1]];
+    } else return;
+    
+    toast.promise(updateImageOrderAction(product.id, newImages.map(img => img.id)), {
+      loading: "Reordering...",
+      success: "Order updated",
+      error: "Failed to reorder"
+    });
   };
 
   return (
@@ -294,26 +319,55 @@ export default function ProductForm({
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-3">
-                  {images.map(img => (
-                    <div key={img.id} className="relative group border rounded-lg overflow-hidden bg-slate-100 aspect-square">
-                      {/* Using standard img tag for internal preview, skipping next/image to avoid host config issues */}
-                      <img src={`/api/media/${img.storageKey}`} alt={img.altText || ""} className="w-full h-full object-cover" />
-                      
-                      {img.isPrimary && (
-                        <div className="absolute top-1 left-1 bg-yellow-400 text-yellow-950 text-xs px-1.5 py-0.5 rounded flex items-center shadow-sm">
-                          <Star className="w-3 h-3 mr-1 fill-current" /> Primary
-                        </div>
-                      )}
-                      
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2 gap-1">
-                        {!img.isPrimary && (
-                          <Button size="sm" variant="secondary" className="h-7 text-xs" onClick={() => setPrimaryImageAction(img.id, product.id)}>
-                            <Star className="w-3 h-3 mr-1" /> Make Primary
-                          </Button>
+                  {images.map((img, i) => (
+                    <div key={img.id} className="relative group border rounded-lg overflow-hidden bg-slate-100 flex flex-col">
+                      <div className="aspect-square relative">
+                        {/* Using standard img tag for internal preview, skipping next/image to avoid host config issues */}
+                        <img src={img.url} alt={img.altText || ""} className="w-full h-full object-cover" />
+                        
+                        {img.isPrimary && (
+                          <div className="absolute top-1 left-1 bg-yellow-400 text-yellow-950 text-xs px-1.5 py-0.5 rounded flex items-center shadow-sm">
+                            <Star className="w-3 h-3 mr-1 fill-current" /> Primary
+                          </div>
                         )}
-                        <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => deleteImageAction(img.id, product.id)}>
-                          <Trash className="w-3 h-3 mr-1" /> Delete
-                        </Button>
+                        
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2 gap-1">
+                          {!img.isPrimary && (
+                            <Button size="sm" variant="secondary" className="h-7 text-xs" onClick={() => setPrimaryImageAction(img.id, product.id)}>
+                              <Star className="w-3 h-3 mr-1" /> Make Primary
+                            </Button>
+                          )}
+                          <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => deleteImageAction(img.id, product.id)}>
+                            <Trash className="w-3 h-3 mr-1" /> Delete
+                          </Button>
+                        </div>
+                        
+                        <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button size="icon" variant="secondary" className="h-6 w-6" disabled={i === 0} onClick={() => handleMoveImage(i, 'up')}>
+                            <ArrowUp className="w-3 h-3" />
+                          </Button>
+                          <Button size="icon" variant="secondary" className="h-6 w-6" disabled={i === images.length - 1} onClick={() => handleMoveImage(i, 'down')}>
+                            <ArrowDown className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="p-2 border-t bg-white">
+                        <Input 
+                          placeholder="Alt text..." 
+                          defaultValue={img.altText || ""} 
+                          className="h-8 text-xs"
+                          onBlur={(e) => {
+                            if (e.target.value !== (img.altText || "")) {
+                              handleUpdateAltText(img.id, e.target.value);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              e.currentTarget.blur();
+                            }
+                          }}
+                        />
                       </div>
                     </div>
                   ))}

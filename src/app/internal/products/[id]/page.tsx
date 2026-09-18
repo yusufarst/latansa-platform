@@ -20,7 +20,13 @@ export default async function ProductEditorPage({ params }: { params: Promise<{ 
     if (!product) notFound();
     
     specifications = await getProductSpecifications(id);
-    images = await getProductImages(id);
+    const dbImages = await getProductImages(id);
+    images = dbImages.map(img => ({
+      id: img.id,
+      altText: img.altText,
+      isPrimary: img.isPrimary,
+      url: `/api/media/${img.storageKey}`
+    }));
   }
 
   const categories = await getCategoriesAdmin();

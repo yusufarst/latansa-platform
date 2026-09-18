@@ -8,7 +8,6 @@ const DEFAULT_PAGE_SIZE = 24;
 export async function getPublicCategories(): Promise<PublicCategoryDTO[]> {
   const data = await db.select().from(categories).where(eq(categories.isActive, true)).orderBy(categories.sortOrder, categories.name);
   return data.map(c => ({
-    id: c.id,
     name: c.name,
     slug: c.slug,
     description: c.description,
@@ -18,7 +17,6 @@ export async function getPublicCategories(): Promise<PublicCategoryDTO[]> {
 export async function getPublicBrands(): Promise<PublicBrandDTO[]> {
   const data = await db.select().from(brands).where(eq(brands.isActive, true)).orderBy(brands.sortOrder, brands.name);
   return data.map(b => ({
-    id: b.id,
     name: b.name,
     slug: b.slug,
     description: b.description,
@@ -53,11 +51,21 @@ export async function getPublicProducts(filters?: CatalogFilters): Promise<{
 
   if (filters?.search) {
     const term = `%${filters.search}%`;
+    
+    const { inArray } = await import("drizzle-orm");
+    
+    const matchingSpecProductIds = db.select({ id: productSpecifications.productId })
+      .from(productSpecifications)
+      .where(ilike(productSpecifications.value, term));
+
     conditions.push(
       or(
         ilike(products.name, term),
         ilike(products.sku, term),
         ilike(products.shortDescription, term),
+        ilike(categories.name, term),
+        ilike(brands.name, term),
+        inArray(products.id, matchingSpecProductIds)
       )!
     );
   }
@@ -131,7 +139,6 @@ export async function getPublicProducts(filters?: CatalogFilters): Promise<{
     .offset(offset);
 
   const result: PublicProductDTO[] = rows.map(r => ({
-    id: r.product.id,
     sku: r.product.sku,
     slug: r.product.slug,
     name: r.product.name,
@@ -140,13 +147,11 @@ export async function getPublicProducts(filters?: CatalogFilters): Promise<{
     publicPrice: r.product.publicPrice,
     isFeatured: r.product.isFeatured,
     category: {
-      id: r.category.id,
       name: r.category.name,
       slug: r.category.slug,
       description: null,
     },
     brand: {
-      id: r.brand.id,
       name: r.brand.name,
       slug: r.brand.slug,
       description: null,
@@ -201,7 +206,6 @@ export async function getPublicProductDetail(slug: string): Promise<PublicProduc
     .orderBy(productSpecifications.sortOrder);
 
   return {
-    id: row.product.id,
     sku: row.product.sku,
     slug: row.product.slug,
     name: row.product.name,
@@ -210,13 +214,11 @@ export async function getPublicProductDetail(slug: string): Promise<PublicProduc
     publicPrice: row.product.publicPrice,
     isFeatured: row.product.isFeatured,
     category: {
-      id: row.category.id,
       name: row.category.name,
       slug: row.category.slug,
       description: row.category.description,
     },
     brand: {
-      id: row.brand.id,
       name: row.brand.name,
       slug: row.brand.slug,
       description: row.brand.description,
@@ -234,7 +236,7 @@ export async function getPublicProductDetail(slug: string): Promise<PublicProduc
   };
 }
 
-export async function getRelatedProducts(productId: string, categoryId: string, limit = 4): Promise<PublicProductDTO[]> {
+export async function getRelatedProducts(productSlug: string, categorySlug: string, limit = 4): Promise<PublicProductDTO[]> {
   const rows = await db
     .select({ product: products, category: categories, brand: brands })
     .from(products)
@@ -243,15 +245,14 @@ export async function getRelatedProducts(productId: string, categoryId: string, 
     .where(
       and(
         eq(products.status, "PUBLISHED"),
-        eq(products.categoryId, categoryId),
-        sql`${products.id} != ${productId}`,
+        eq(categories.slug, categorySlug),
+        sql`${products.slug} != ${productSlug}`,
       )
     )
     .orderBy(desc(products.isFeatured), desc(products.publishedAt))
     .limit(limit);
 
   return rows.map(r => ({
-    id: r.product.id,
     sku: r.product.sku,
     slug: r.product.slug,
     name: r.product.name,
@@ -259,8 +260,8 @@ export async function getRelatedProducts(productId: string, categoryId: string, 
     description: null,
     publicPrice: r.product.publicPrice,
     isFeatured: r.product.isFeatured,
-    category: { id: r.category.id, name: r.category.name, slug: r.category.slug, description: null },
-    brand: { id: r.brand.id, name: r.brand.name, slug: r.brand.slug, description: null },
+    category: { name: r.category.name, slug: r.category.slug, description: null },
+    brand: { name: r.brand.name, slug: r.brand.slug, description: null },
     images: [],
     specifications: [],
   }));
@@ -285,9 +286,9 @@ export async function recordWhatsAppClickEvent(productId: string, metadata?: Rec
   });
 }
 
-export async function isProductPublished(slug: string): Promise<{ published: boolean; productId?: string; productName?: string }> {
+export async function isProductPublished(slug: string): Promise<{ published: boolean; productId?: string; productName?: string; sku?: string }> {
   const [row] = await db
-    .select({ id: products.id, name: products.name, status: products.status })
+    .select({ id: products.id, name: products.name, status: products.status, sku: products.sku })
     .from(products)
     .where(eq(products.slug, slug))
     .limit(1);
@@ -297,6 +298,7 @@ export async function isProductPublished(slug: string): Promise<{ published: boo
     published: row.status === "PUBLISHED",
     productId: row.id,
     productName: row.name,
+    sku: row.sku,
   };
 }
 

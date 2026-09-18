@@ -5,14 +5,14 @@ import { eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'http://localhost:3000';
+const baseUrl = process.env.PUBLIC_SITE_URL || (process.env.NODE_ENV !== 'production' ? process.env.APP_URL || 'http://localhost:3000' : '');
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Base static routes
   const routes = [
     '',
     '/products',
-    '/products/compare',
+    '/compare',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),

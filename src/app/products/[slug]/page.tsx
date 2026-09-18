@@ -45,7 +45,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     notFound();
   }
 
-  const relatedProducts = await getRelatedProducts(product.id, product.category.id, 4);
+  const relatedProducts = await getRelatedProducts(product.slug, product.category.slug, 4);
 
   // Group specs by groupName
   const groupedSpecs = product.specifications.reduce((acc, spec) => {
@@ -173,7 +173,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map(rp => (
-                <Link key={rp.id} href={`/products/${rp.slug}`} className="group flex flex-col bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+                <Link key={rp.slug} href={`/products/${rp.slug}`} className="group flex flex-col bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
                   <div className="aspect-square bg-slate-50 relative p-4 flex items-center justify-center border-b">
                      <div className="text-slate-300">
                        <span className="text-xs uppercase tracking-wider font-semibold">View Detail</span>

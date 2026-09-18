@@ -238,26 +238,29 @@ export async function updateProductSpecifications(
 ) {
   const { user } = await requireRole(["SUPER_ADMIN", "PRODUCT_SALES_ADMIN"]);
 
-  // Delete existing specs and re-insert (simple transactional approach)
-  await db.delete(productSpecifications).where(eq(productSpecifications.productId, productId));
+  await db.transaction(async (tx) => {
+    // Delete existing specs and re-insert transactionally
+    await tx.delete(productSpecifications).where(eq(productSpecifications.productId, productId));
 
-  if (specs.length > 0) {
-    await db.insert(productSpecifications).values(
-      specs.map((s, i) => ({
-        productId,
-        groupName: s.groupName || null,
-        key: s.key,
-        value: s.value,
-        sortOrder: s.sortOrder ?? i,
-      }))
-    );
-  }
+    if (specs.length > 0) {
+      await tx.insert(productSpecifications).values(
+        specs.map((s, i) => ({
+          productId,
+          groupName: s.groupName || null,
+          key: s.key,
+          value: s.value,
+          sortOrder: s.sortOrder ?? i,
+        }))
+      );
+    }
 
-  await appendAuditLog("PRODUCT_SPECIFICATIONS_UPDATED", {
-    actorUserId: user.id,
-    entityType: "PRODUCT",
-    entityId: productId,
-    metadata: { specCount: specs.length },
+    await appendAuditLog("PRODUCT_SPECIFICATIONS_UPDATED", {
+      actorUserId: user.id,
+      entityType: "PRODUCT",
+      entityId: productId,
+      metadata: { specCount: specs.length },
+      tx
+    });
   });
 }
 

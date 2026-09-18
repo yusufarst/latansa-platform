@@ -62,14 +62,12 @@ export const publishValidation = z.object({
 
 // Safe public DTOs — NEVER expose internal data
 export type PublicCategoryDTO = {
-  id: string;
   name: string;
   slug: string;
   description: string | null;
 };
 
 export type PublicBrandDTO = {
-  id: string;
   name: string;
   slug: string;
   description: string | null;
@@ -83,7 +81,6 @@ export type PublicImageDTO = {
 };
 
 export type PublicProductDTO = {
-  id: string;
   sku: string;
   slug: string;
   name: string;

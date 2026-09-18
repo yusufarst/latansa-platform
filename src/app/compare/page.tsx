@@ -31,7 +31,7 @@ export default async function ComparePage({
       <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Too Many Products</h1>
         <p className="text-slate-500 mb-6">You can only compare up to 4 products at a time.</p>
-        <Link href={`/products/compare?items=${slugs.slice(0, 4).join(",")}`} className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 bg-blue-600 text-white hover:bg-blue-700">
+        <Link href={`/compare?items=${slugs.slice(0, 4).join(",")}`} className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 bg-blue-600 text-white hover:bg-blue-700">
           Compare First 4
         </Link>
       </div>
@@ -80,7 +80,7 @@ export default async function ComparePage({
                   Product Overview
                 </th>
                 {products.map(product => (
-                  <th key={product.id} className="w-1/5 p-6 border-b align-top relative">
+                  <th key={product.slug} className="w-1/5 p-6 border-b align-top relative">
                     <div className="flex flex-col h-full">
                       <div className="aspect-square bg-slate-100 rounded-lg overflow-hidden flex items-center justify-center mb-4 p-4 relative">
                         {product.images?.[0] ? (
@@ -89,7 +89,7 @@ export default async function ComparePage({
                           <Package className="w-8 h-8 text-slate-300" />
                         )}
                         <Link 
-                          href={`/products/compare?items=${slugs.filter(s => s !== product.slug).join(",")}`}
+                          href={`/compare?items=${slugs.filter(s => s !== product.slug).join(",")}`}
                           className="absolute top-2 right-2 bg-white/80 hover:bg-white text-slate-600 rounded-full p-1 shadow-sm backdrop-blur-sm transition-colors"
                           title="Remove from comparison"
                         >
@@ -127,21 +127,21 @@ export default async function ComparePage({
               <tr>
                 <th className="p-4 border-b border-r bg-slate-50 font-medium text-slate-600">Category</th>
                 {products.map(product => (
-                  <td key={product.id} className="p-4 border-b text-slate-900 font-medium">{product.category.name}</td>
+                  <td key={product.slug} className="p-4 border-b text-slate-900 font-medium">{product.category.name}</td>
                 ))}
                 {Array.from({ length: 4 - products.length }).map((_, i) => <td key={`empty-cat-${i}`} className="p-4 border-b bg-slate-50/50"></td>)}
               </tr>
               <tr>
                 <th className="p-4 border-b border-r bg-slate-50 font-medium text-slate-600">SKU</th>
                 {products.map(product => (
-                  <td key={product.id} className="p-4 border-b text-slate-600">{product.sku}</td>
+                  <td key={product.slug} className="p-4 border-b text-slate-600">{product.sku}</td>
                 ))}
                 {Array.from({ length: 4 - products.length }).map((_, i) => <td key={`empty-sku-${i}`} className="p-4 border-b bg-slate-50/50"></td>)}
               </tr>
               <tr>
                 <th className="p-4 border-b border-r bg-slate-50 font-medium text-slate-600 align-top">Description</th>
                 {products.map(product => (
-                  <td key={product.id} className="p-4 border-b text-slate-600 align-top">
+                  <td key={product.slug} className="p-4 border-b text-slate-600 align-top">
                     <p className="line-clamp-4">{product.shortDescription || "No description"}</p>
                   </td>
                 ))}
@@ -164,7 +164,7 @@ export default async function ComparePage({
                   {products.map(product => {
                     const spec = product.specifications.find(s => s.key === specKey);
                     return (
-                      <td key={product.id} className="p-4 border-b text-slate-900">
+                      <td key={product.slug} className="p-4 border-b text-slate-900">
                         {spec ? (
                           spec.value.toLowerCase() === "yes" || spec.value.toLowerCase() === "true" ? (
                             <Check className="w-5 h-5 text-green-600" />
