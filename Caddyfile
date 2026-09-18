@@ -1,0 +1,7 @@
+{$PUBLIC_DOMAIN} {
+    reverse_proxy app:3000
+}
+
+{$INTERNAL_DOMAIN} {
+    reverse_proxy app:3000
+}

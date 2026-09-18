@@ -1,20 +1,42 @@
 # LATANSA Platform
 
-## Project Overview
-A premium, modern, production-grade platform for LATANSA JOGJAKARTA, an electronics business. The platform encompasses a public corporate website/product catalog and an internal owner executive dashboard for product, inventory, and sales management.
+LATANSA Platform is a premium, modern, production-grade web application for an electronics business. It serves both public customers and internal staff through a single modular monolith.
 
-## Architecture Summary
-- **Modular Monolith**: One main codebase, one PostgreSQL database.
-- **Stack**: Next.js, TypeScript, PostgreSQL, Drizzle ORM, Zod, Tailwind CSS, shadcn/ui, Vitest, Playwright.
-- **Deployment**: VPS via Docker Compose and Caddy.
-- **Open-Source Priority**: No unnecessary microservices, no mandatory paid SaaS, zero-or-near-zero recurring-cost infrastructure.
+## Stack
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS & shadcn/ui
+- PostgreSQL & Drizzle ORM
+- Docker & Caddy
 
-## Development Status
-See `docs/00-CURRENT-STATE.md` for the current development phase and task.
+## Prerequisites
+- Node.js >= 20
+- Docker & Docker Compose
+- PostgreSQL (if running locally without Docker)
+
+## Local Setup
+1. Clone the repository.
+2. Ensure you have the required environment variables. Copy `.env.example` to `.env` and fill in the dummy values for local development. **NEVER commit `.env` or any files containing real credentials.**
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Docker Development/Start
+To start the application and database using Docker Compose:
+```bash
+docker-compose up -d
+```
+
+## Quality Commands
+- Linting: `npm run lint`
+- Type checking: `npm run typecheck`
+- Unit Tests: `npm run test:run`
+- E2E Tests: `npm run test:e2e`
 
 ## Documentation
-Developers and Agents MUST read `AGENTS.md` and the `docs/` folder before making any changes.
-
-Start here:
-- [AGENTS.md](./AGENTS.md)
-- [docs/00-CURRENT-STATE.md](./docs/00-CURRENT-STATE.md)
+For the universal agent contract, current state, architecture, and other important documentation, please refer to the files in `docs/` and `AGENTS.md` at the root of the project.
