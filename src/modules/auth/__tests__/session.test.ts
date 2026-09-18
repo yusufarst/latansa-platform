@@ -37,6 +37,7 @@ describe("Session Crypto", () => {
   });
 
   it("raw session token is not the stored token hash", () => {
+
     const token = generateSessionToken();
     const hash = hashSessionToken(token);
     
@@ -55,13 +56,13 @@ describe("Session Cookie Policy", () => {
 
   it("sets correct expiration when provided", () => {
     const expiresAt = new Date();
-    const config = getCookieConfig(expiresAt) as any;
+    const config = getCookieConfig(expiresAt) as Record<string, unknown>;
     expect(config.expires).toBe(expiresAt);
     expect(config.maxAge).toBeUndefined();
   });
 
   it("sets maxAge 0 when clearing cookie (no expiration provided)", () => {
-    const config = getCookieConfig() as any;
+    const config = getCookieConfig() as Record<string, unknown>;
     expect(config.maxAge).toBe(0);
     expect(config.expires).toBeUndefined();
   });

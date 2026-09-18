@@ -49,14 +49,14 @@ export async function loginAction(input: LoginInput) {
   
   if (!user || !user.isActive) {
     await recordFailedLogin(ip, email);
-    await appendAuditLog("AUTH_LOGIN_FAILURE", { metadata: { email, reason: "invalid_credentials" } });
+    await appendAuditLog("AUTH_LOGIN_FAILURE", { metadata: { reason: "invalid_credentials" } });
     return { error: "Invalid email or password" };
   }
   
   const isValidPassword = await verifyPassword(password, user.passwordHash);
   if (!isValidPassword) {
     await recordFailedLogin(ip, email);
-    await appendAuditLog("AUTH_LOGIN_FAILURE", { metadata: { email, reason: "invalid_credentials" } });
+    await appendAuditLog("AUTH_LOGIN_FAILURE", { metadata: { reason: "invalid_credentials" } });
     return { error: "Invalid email or password" };
   }
   

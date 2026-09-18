@@ -20,24 +20,38 @@ const clientSchema = z.object({
   NEXT_PUBLIC_WHATSAPP_NUMBER: z.string().min(1).optional(),
 });
 
+import * as fs from 'fs';
+import * as dotenv from 'dotenv';
+
+// Attempt to load .env explicitly to bypass system env vars during dev
+let localEnv: Record<string, string> = {};
+try {
+  localEnv = dotenv.parse(fs.readFileSync('.env'));
+} catch {
+  // Ignore in prod
+}
+
+const getEnv = (key: string) => localEnv[key] || process.env[key];
+
 const processEnv = {
-  DATABASE_URL: process.env.DATABASE_URL,
-  APP_URL: process.env.APP_URL,
-  PUBLIC_SITE_URL: process.env.PUBLIC_SITE_URL,
-  SESSION_SECRET: process.env.SESSION_SECRET,
-  ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
-  SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL,
-  SUPER_ADMIN_INITIAL_PASSWORD: process.env.SUPER_ADMIN_INITIAL_PASSWORD,
-  UPLOAD_DIR: process.env.UPLOAD_DIR,
-  PUBLIC_DOMAIN: process.env.PUBLIC_DOMAIN,
-  INTERNAL_DOMAIN: process.env.INTERNAL_DOMAIN,
-  NEXT_PUBLIC_WHATSAPP_NUMBER: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
+  DATABASE_URL: getEnv('DATABASE_URL'),
+  APP_URL: getEnv('APP_URL'),
+  PUBLIC_SITE_URL: getEnv('PUBLIC_SITE_URL'),
+  SESSION_SECRET: getEnv('SESSION_SECRET'),
+  ENCRYPTION_KEY: getEnv('ENCRYPTION_KEY'),
+  SUPER_ADMIN_EMAIL: getEnv('SUPER_ADMIN_EMAIL'),
+  SUPER_ADMIN_INITIAL_PASSWORD: getEnv('SUPER_ADMIN_INITIAL_PASSWORD'),
+  UPLOAD_DIR: getEnv('UPLOAD_DIR'),
+  PUBLIC_DOMAIN: getEnv('PUBLIC_DOMAIN'),
+  INTERNAL_DOMAIN: getEnv('INTERNAL_DOMAIN'),
+  NEXT_PUBLIC_WHATSAPP_NUMBER: getEnv('NEXT_PUBLIC_WHATSAPP_NUMBER'),
 };
 
 const isServer = typeof window === "undefined";
+const skipValidation = process.env.SKIP_ENV_VALIDATION === "1" || process.env.npm_lifecycle_event === "build" || process.env.NEXT_PHASE === "phase-production-build";
 
-const parsedServer = isServer ? serverSchema.safeParse(processEnv) : { success: true, data: {} };
-const parsedClient = clientSchema.safeParse(processEnv);
+const parsedServer = isServer && !skipValidation ? serverSchema.safeParse(processEnv) : { success: true, data: processEnv as Record<string, string | undefined> };
+const parsedClient = !skipValidation ? clientSchema.safeParse(processEnv) : { success: true, data: processEnv as Record<string, string | undefined> };
 
 if (!parsedServer.success || !parsedClient.success) {
   console.error("❌ Invalid environment variables:");

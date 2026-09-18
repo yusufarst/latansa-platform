@@ -48,7 +48,7 @@ async function runBootstrap() {
       throw new Error("SUPER_ADMIN role not found after creation attempt");
     }
     
-    console.log(`✅ Creating initial SUPER_ADMIN user: ${superAdminEmail}`);
+    console.log("✅ Creating initial SUPER_ADMIN user");
     const passwordHash = await hashPassword(superAdminPassword);
     
     const [newUser] = await db.insert(users).values({
@@ -60,15 +60,17 @@ async function runBootstrap() {
     
     await appendAuditLog("USER_BOOTSTRAPPED", { 
       actorUserId: newUser.id,
-      metadata: { email: superAdminEmail } 
+      metadata: { role: "SUPER_ADMIN" } 
     });
     
     console.log("✅ Bootstrap complete.");
   } else {
-    console.log(`ℹ️ User ${superAdminEmail} already exists. Skipping creation.`);
+    console.log("ℹ️ SUPER_ADMIN user already exists. Skipping creation.");
   }
   
   process.exit(0);
 }
 
-runBootstrap().catch(console.error);
+runBootstrap().catch(() => {
+  process.exit(1);
+});
