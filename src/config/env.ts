@@ -6,11 +6,14 @@ const serverSchema = z.object({
   PUBLIC_SITE_URL: z.string().url().optional(),
   SESSION_SECRET: z.string().min(16),
   ENCRYPTION_KEY: z.string().min(16),
-  SUPER_ADMIN_EMAIL: z.string().email(),
-  SUPER_ADMIN_INITIAL_PASSWORD: z.string().min(8),
   UPLOAD_DIR: z.string().min(1),
   PUBLIC_DOMAIN: z.string().optional(),
   INTERNAL_DOMAIN: z.string().optional(),
+});
+
+const bootstrapSchema = z.object({
+  SUPER_ADMIN_EMAIL: z.string().email(),
+  SUPER_ADMIN_INITIAL_PASSWORD: z.string().min(8),
 });
 
 const clientSchema = z.object({
@@ -51,3 +54,13 @@ export const env = {
   ...parsedServer.data,
   ...parsedClient.data,
 } as z.infer<typeof serverSchema> & z.infer<typeof clientSchema>;
+
+export function getBootstrapEnv() {
+  const parsed = bootstrapSchema.safeParse(processEnv);
+  if (!parsed.success) {
+    console.error("❌ Invalid bootstrap environment variables:");
+    console.error(parsed.error.format());
+    throw new Error("Invalid bootstrap environment variables");
+  }
+  return parsed.data;
+}

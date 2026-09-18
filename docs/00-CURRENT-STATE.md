@@ -2,7 +2,7 @@ PROJECT:
 LATANSA Platform
 
 PHASE:
-FOUNDATION COMPLETE / AUTH NEXT
+AUTH/RBAC COMPLETE / PRODUCT CATALOG NEXT
 
 COMPLETED:
 - GitHub repository created and connected
@@ -27,20 +27,36 @@ COMPLETED:
 - environment example synchronized
 - temporary auth schema removed before canonical auth implementation
 - Docker production ingress baseline hardened
+- canonical three-role auth schema
+- password hashing
+- PostgreSQL-backed session authentication
+- secure HttpOnly session cookie
+- backend-enforced RBAC
+- login/logout
+- internal application shell
+- auth audit events
+- login rate limiting
+- auth migration generated
+- auth/unit/browser verification performed
 
 CURRENT TASK:
-- authentication and RBAC
+- product and public catalog vertical slice
 
 NEXT:
-- users/roles/sessions schema
-- secure authentication
-- SUPER_ADMIN / INVENTORY_ADMIN / PRODUCT_SALES_ADMIN backend RBAC
-- internal application shell
-- product/catalog vertical slice
+- categories
+- brands
+- products
+- dynamic specifications
+- product images
+- public catalog
+- search/filter
+- product detail
+- compare
+- WhatsApp conversion tracking
 
 KNOWN ISSUES:
 - production VPS credentials and production environment are intentionally not configured yet
-- authentication and RBAC are not implemented yet
+- safe local PostgreSQL unavailable, DB migration and DB integration tests were not executed
 
 BLOCKERS:
 - none

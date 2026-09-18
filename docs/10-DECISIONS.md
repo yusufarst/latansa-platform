@@ -14,3 +14,5 @@
 - **DEC-012**: Demo data allowed through seed scripts only; no hardcoded demo UI data.
 - **DEC-013**: No secrets in Git.
 - **DEC-014**: Vertical-slice implementation workflow.
+- **DEC-015**: Credential auth is first-party; opaque server-side sessions in PostgreSQL.
+- **DEC-016**: Password hashing uses bcrypt; raw session tokens never stored in DB.
