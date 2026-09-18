@@ -1,0 +1,11 @@
+- GitHub repository is the sole source of truth.
+- Conversation memory is secondary.
+- Read @/AGENTS.md and @/docs/00-CURRENT-STATE.md before substantial work.
+- Read only relevant domain docs after that.
+- Never hardcode or commit secrets.
+- Never change locked architecture without explicit approval (see @/docs/02-ARCHITECTURE.md and @/docs/10-DECISIONS.md).
+- Never introduce paid SaaS without approval.
+- Never perform unrelated refactors.
+- Inventory ledger rules are mandatory.
+- Backend RBAC is mandatory.
+- Tasks must satisfy Definition of Done before being marked complete.
