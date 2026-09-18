@@ -1,5 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { requireRole } from "../authorization";
+import { getSafeRedirectUrl } from "../utils";
+import { ROLE_CODES } from "../db/schema";
 
 // Mock Next.js Navigation
 const mockRedirect = vi.fn();
@@ -59,7 +61,7 @@ describe("RBAC Authorization", () => {
     expect(mockRedirect).not.toHaveBeenCalled();
     
     await requireRole(["SUPER_ADMIN", "PRODUCT_SALES_ADMIN"]);
-    expect(mockRedirect).toHaveBeenCalledWith("/internal?error=access_denied");
+    expect(mockRedirect).toHaveBeenCalledWith("/internal/access-denied");
   });
 
   it("PRODUCT_SALES_ADMIN allowed products, denied inventory", async () => {
@@ -70,6 +72,31 @@ describe("RBAC Authorization", () => {
     expect(mockRedirect).not.toHaveBeenCalled();
     
     await requireRole(["SUPER_ADMIN", "INVENTORY_ADMIN"]);
-    expect(mockRedirect).toHaveBeenCalledWith("/internal?error=access_denied");
+    expect(mockRedirect).toHaveBeenCalledWith("/internal/access-denied");
+  });
+});
+
+describe("Safe Redirect", () => {
+  it("allows internal paths", () => {
+    expect(getSafeRedirectUrl("/internal/products")).toBe("/internal/products");
+    expect(getSafeRedirectUrl("/internal")).toBe("/internal");
+  });
+
+  it("rejects external or malformed paths and falls back to /internal", () => {
+    expect(getSafeRedirectUrl("https://evil.com")).toBe("/internal");
+    expect(getSafeRedirectUrl("//evil.com")).toBe("/internal");
+    expect(getSafeRedirectUrl("javascript:alert(1)")).toBe("/internal");
+    expect(getSafeRedirectUrl("/external")).toBe("/internal");
+    expect(getSafeRedirectUrl(null)).toBe("/internal");
+  });
+});
+
+describe("Role Invariants", () => {
+  it("has exactly three canonical roles", () => {
+    expect(ROLE_CODES).toHaveLength(3);
+    expect(ROLE_CODES).toContain("SUPER_ADMIN");
+    expect(ROLE_CODES).toContain("INVENTORY_ADMIN");
+    expect(ROLE_CODES).toContain("PRODUCT_SALES_ADMIN");
+    expect((ROLE_CODES as readonly string[]).includes("PUBLIC")).toBe(false);
   });
 });

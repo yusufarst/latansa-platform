@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { generateSessionToken, hashSessionToken } from "../session";
+import { generateSessionToken, hashSessionToken, getCookieConfig } from "../session";
 
 // Mock env so hashing has a consistent secret
 vi.mock("@/config/env", () => ({
@@ -41,5 +41,28 @@ describe("Session Crypto", () => {
     const hash = hashSessionToken(token);
     
     expect(token).not.toBe(hash);
+  });
+});
+
+describe("Session Cookie Policy", () => {
+  it("uses standard secure defaults", () => {
+    const config = getCookieConfig();
+    expect(config.httpOnly).toBe(true);
+    expect(config.sameSite).toBe("lax");
+    expect(config.path).toBe("/");
+    expect(config.secure).toBe(process.env.NODE_ENV === "production");
+  });
+
+  it("sets correct expiration when provided", () => {
+    const expiresAt = new Date();
+    const config = getCookieConfig(expiresAt) as any;
+    expect(config.expires).toBe(expiresAt);
+    expect(config.maxAge).toBeUndefined();
+  });
+
+  it("sets maxAge 0 when clearing cookie (no expiration provided)", () => {
+    const config = getCookieConfig() as any;
+    expect(config.maxAge).toBe(0);
+    expect(config.expires).toBeUndefined();
   });
 });

@@ -2,7 +2,7 @@ PROJECT:
 LATANSA Platform
 
 PHASE:
-AUTH/RBAC COMPLETE / PRODUCT CATALOG NEXT
+AUTH/RBAC HARDENED / PRODUCT CATALOG NEXT
 
 COMPLETED:
 - GitHub repository created and connected
@@ -38,6 +38,14 @@ COMPLETED:
 - login rate limiting
 - auth migration generated
 - auth/unit/browser verification performed
+- database-enforced canonical role invariant
+- database email normalization invariant
+- corrected IP + email login throttling
+- privacy-safe rate-limit identifiers
+- proper access-denied state
+- hardened session API surface
+- expanded auth security unit coverage
+- incremental auth-hardening migration generated
 
 CURRENT TASK:
 - product and public catalog vertical slice

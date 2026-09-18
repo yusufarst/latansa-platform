@@ -8,6 +8,20 @@
       "when": 1789736199589,
       "tag": "0000_lying_moondragon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789737253609,
+      "tag": "0001_furry_lady_ursula",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789737271526,
+      "tag": "0002_special_bloodscream",
+      "breakpoints": true
     }
   ]
 }

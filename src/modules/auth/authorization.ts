@@ -53,9 +53,7 @@ export async function requireRole(allowedRoleCodes: string[]) {
   });
   
   if (!roleRecord || !allowedRoleCodes.includes(roleRecord.code)) {
-    // Instead of throwing an error, we might want to render an unauthorized page or redirect to a standard denied page.
-    // Throwing a generic Next error for now or redirecting to an unauthorized route.
-    redirect("/internal?error=access_denied");
+    redirect("/internal/access-denied");
   }
   
   return { session, user, role: roleRecord };

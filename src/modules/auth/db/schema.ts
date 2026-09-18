@@ -1,11 +1,17 @@
-import { pgTable, varchar, timestamp, boolean, uuid, jsonb, integer, index } from "drizzle-orm/pg-core";
+import { pgTable, varchar, timestamp, boolean, uuid, jsonb, integer, index, check } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+
+export const ROLE_CODES = ["SUPER_ADMIN", "INVENTORY_ADMIN", "PRODUCT_SALES_ADMIN"] as const;
+export type RoleCode = typeof ROLE_CODES[number];
 
 export const roles = pgTable("roles", {
   id: uuid("id").primaryKey().defaultRandom(),
   code: varchar("code", { length: 50 }).notNull().unique(), // SUPER_ADMIN, INVENTORY_ADMIN, PRODUCT_SALES_ADMIN
   name: varchar("name", { length: 255 }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  codeCheck: check("roles_code_check", sql`${table.code} IN ('SUPER_ADMIN', 'INVENTORY_ADMIN', 'PRODUCT_SALES_ADMIN')`),
+}));
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -16,7 +22,9 @@ export const users = pgTable("users", {
   lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  emailLowerCheck: check("users_email_lower_check", sql`${table.email} = lower(${table.email})`),
+}));
 
 export const sessions = pgTable("sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -30,16 +38,16 @@ export const sessions = pgTable("sessions", {
 
 export const authRateLimits = pgTable("auth_rate_limits", {
   id: uuid("id").primaryKey().defaultRandom(),
-  ipHash: varchar("ip_hash", { length: 255 }), // Hashed IP or identifier
-  email: varchar("email", { length: 255 }), // Attempted email
+  scope: varchar("scope", { length: 50 }).notNull(), // 'IP' or 'EMAIL'
+  keyHash: varchar("key_hash", { length: 255 }).notNull().unique(), // Hashed IP or Email
   attempts: integer("attempts").default(0).notNull(),
+  windowStartedAt: timestamp("window_started_at").defaultNow().notNull(),
   blockedUntil: timestamp("blocked_until"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => {
   return {
-    emailIdx: index("auth_rate_limits_email_idx").on(table.email),
-    ipHashIdx: index("auth_rate_limits_ip_hash_idx").on(table.ipHash),
+    keyHashIdx: index("auth_rate_limits_key_hash_idx").on(table.keyHash),
   };
 });
 

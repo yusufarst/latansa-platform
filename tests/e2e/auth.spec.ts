@@ -28,6 +28,10 @@ test.describe('Authentication & RBAC DB-independent E2E', () => {
     // Attempt to access products proof route
     await page.goto('/internal/products');
     await expect(page).toHaveURL(/.*\/login/);
+
+    // Attempt to access access-denied route
+    await page.goto('/internal/access-denied');
+    await expect(page).toHaveURL(/.*\/login/);
   });
 
   test('responsive login layout works on mobile', async ({ page }) => {

@@ -62,7 +62,7 @@ export async function loginAction(input: LoginInput) {
   
   await resetRateLimit(ip, email);
   
-  const token = await createSession(user.id);
+  await createSession(user.id);
   
   await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
   

@@ -8,6 +8,16 @@ import { cookies } from "next/headers";
 const SESSION_COOKIE_NAME = "session";
 const SESSION_EXPIRY_HOURS = 12;
 
+export function getCookieConfig(expiresAt?: Date) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    ...(expiresAt ? { expires: expiresAt } : { maxAge: 0 }),
+  };
+}
+
 /**
  * Generate a cryptographically secure random session token.
  */
@@ -25,7 +35,7 @@ export function hashSessionToken(token: string): string {
 /**
  * Create a new session in the database and set the cookie.
  */
-export async function createSession(userId: string): Promise<string> {
+export async function createSession(userId: string): Promise<void> {
   const token = generateSessionToken();
   const tokenHash = hashSessionToken(token);
   const expiresAt = new Date(Date.now() + SESSION_EXPIRY_HOURS * 60 * 60 * 1000);
@@ -37,8 +47,6 @@ export async function createSession(userId: string): Promise<string> {
   });
 
   await setSessionCookie(token, expiresAt);
-
-  return token;
 }
 
 /**
@@ -46,13 +54,7 @@ export async function createSession(userId: string): Promise<string> {
  */
 async function setSessionCookie(token: string, expiresAt: Date) {
   const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    expires: expiresAt,
-  });
+  cookieStore.set(SESSION_COOKIE_NAME, token, getCookieConfig(expiresAt));
 }
 
 /**
@@ -60,13 +62,7 @@ async function setSessionCookie(token: string, expiresAt: Date) {
  */
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
+  cookieStore.set(SESSION_COOKIE_NAME, "", getCookieConfig());
 }
 
 /**
