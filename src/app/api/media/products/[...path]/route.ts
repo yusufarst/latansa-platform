@@ -36,11 +36,16 @@ export async function GET(
       .from(products)
       .where(eq(products.id, productId));
 
-    if (!product || product.status !== "PUBLISHED") {
-      // If we are authenticated as SUPER_ADMIN or PRODUCT_SALES_ADMIN, we should probably allow viewing drafts.
-      // For simplicity in this secure public endpoint, we deny access unless it's published.
-      // (An internal endpoint could be created for previews if needed).
-      return new NextResponse("Forbidden - Draft Product", { status: 403 });
+    if (!product) {
+      return new NextResponse("Not Found", { status: 404 });
+    }
+
+    if (product.status !== "PUBLISHED") {
+      const { getCurrentSession } = await import("@/modules/auth/authorization");
+      const sessionResult = await getCurrentSession();
+      if (!sessionResult) {
+        return new NextResponse("Forbidden - Draft Product", { status: 403 });
+      }
     }
 
     // Security 3: Path traversal protection (preventing '..' in filename)

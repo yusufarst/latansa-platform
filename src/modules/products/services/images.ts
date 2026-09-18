@@ -107,7 +107,7 @@ export async function deleteProductImage(imageId: string) {
   }
 
   // Delete file from disk
-  const filePath = join(getUploadDir(), image.storageKey);
+  const filePath = join(/*turbopackIgnore: true*/ getUploadDir(), image.storageKey);
   try {
     await unlink(filePath);
   } catch {
@@ -150,6 +150,34 @@ export async function updateImageOrder(
     entityId: productId,
     metadata: { imageCount: imageIds.length },
   });
+}
+
+export async function updateImageMetadata(
+  imageId: string,
+  productId: string,
+  data: { altText?: string | null; sortOrder?: number }
+) {
+  const { user } = await requireRole(["SUPER_ADMIN", "PRODUCT_SALES_ADMIN"]);
+
+  const [image] = await db
+    .update(productImages)
+    .set({
+      altText: data.altText,
+      ...(data.sortOrder !== undefined ? { sortOrder: data.sortOrder } : {}),
+    })
+    .where(and(eq(productImages.id, imageId), eq(productImages.productId, productId)))
+    .returning();
+
+  if (!image) throw new Error("Image not found");
+
+  await appendAuditLog("PRODUCT_IMAGE_METADATA_UPDATED", {
+    actorUserId: user.id,
+    entityType: "PRODUCT_IMAGE",
+    entityId: imageId,
+    metadata: { productId, changedKeys: Object.keys(data) },
+  });
+
+  return image;
 }
 
 export async function setPrimaryImage(imageId: string, productId: string) {

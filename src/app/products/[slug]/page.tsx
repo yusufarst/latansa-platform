@@ -22,7 +22,7 @@ export async function generateMetadata(
   const productImages = product.images.map(img => img.url);
 
   return {
-    title: `${product.name} | LATANSA Medical Equipment`,
+    title: `${product.name} | LATANSA Electronics & IT Equipment`,
     description: product.shortDescription || product.description?.substring(0, 160) || `Buy ${product.name} from LATANSA`,
     openGraph: {
       title: product.name,
@@ -124,7 +124,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <p className="text-sm text-slate-500 mb-6">Price excludes VAT and delivery charges. Subject to availability.</p>
               
               <div className="flex flex-col sm:flex-row gap-3">
-                <WhatsAppButton productId={product.id} productName={product.name} />
+                <WhatsAppButton slug={product.slug} />
                 <CompareButton slug={product.slug} className="h-12 text-sm px-6 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700" />
               </div>
             </div>

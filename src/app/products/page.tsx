@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getPublicProducts, getPublicCategories, getPublicBrands } from "@/modules/products/services/public";
+import { getPublicProducts, getPublicCategories, getPublicBrands, getPublicSpecificationFilters } from "@/modules/products/services/public";
 import Link from "next/link";
 import { CatalogFilters } from "@/modules/products/validations";
 import { Search, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
@@ -9,8 +9,8 @@ import { CompareButton } from "@/components/compare-button";
 import { CatalogSort } from "./catalog-sort";
 
 export const metadata: Metadata = {
-  title: 'Catalog | LATANSA Medical Equipment',
-  description: 'Browse our extensive catalog of premium medical devices, hospital furniture, and clinical supplies.',
+  title: 'Catalog | LATANSA Electronics & IT Equipment',
+  description: 'Browse our extensive catalog of premium electronics, networking gear, and hardware solutions.',
 };
 
 export default async function PublicCatalogPage({
@@ -20,6 +20,14 @@ export default async function PublicCatalogPage({
 }) {
   const params = await searchParams;
   
+  const specs: Record<string, string[]> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (['q', 'category', 'brand', 'sort', 'page'].includes(key)) continue;
+    if (value) {
+      specs[key] = Array.isArray(value) ? value : [value];
+    }
+  }
+
   const filters: CatalogFilters = {
     search: typeof params.q === 'string' ? params.q : undefined,
     categorySlug: typeof params.category === 'string' ? params.category : undefined,
@@ -27,31 +35,42 @@ export default async function PublicCatalogPage({
     sort: (typeof params.sort === 'string' ? params.sort : "default") as CatalogFilters["sort"],
     page: typeof params.page === 'string' ? parseInt(params.page) : 1,
     pageSize: 12,
+    specs: Object.keys(specs).length > 0 ? specs : undefined,
   };
 
-  const [productsData, categories, brands] = await Promise.all([
+  const [productsData, categories, brands, specFilters] = await Promise.all([
     getPublicProducts(filters),
     getPublicCategories(),
     getPublicBrands(),
+    getPublicSpecificationFilters(filters.categorySlug),
   ]);
 
   const { products, total, page, totalPages } = productsData;
 
-  const buildUrl = (updates: Record<string, string | null>) => {
+  const buildUrl = (updates: Record<string, string | string[] | null>) => {
     const search = new URLSearchParams();
     if (filters.search) search.set("q", filters.search);
     if (filters.categorySlug) search.set("category", filters.categorySlug);
     if (filters.brandSlug) search.set("brand", filters.brandSlug);
     if (filters.sort && filters.sort !== "default") search.set("sort", filters.sort);
     if (page > 1) search.set("page", page.toString());
+    
+    for (const [key, values] of Object.entries(specs)) {
+      for (const v of values) {
+        search.append(key, v);
+      }
+    }
 
     for (const [key, val] of Object.entries(updates)) {
-      if (val === null) search.delete(key);
-      else search.set(key, val);
+      search.delete(key);
+      if (val !== null) {
+        const vals = Array.isArray(val) ? val : [val];
+        for (const v of vals) search.append(key, v);
+      }
     }
     
     // Reset to page 1 if changing filters
-    if (!updates.page && (updates.category !== undefined || updates.brand !== undefined || updates.q !== undefined)) {
+    if (!updates.page && (updates.category !== undefined || updates.brand !== undefined || updates.q !== undefined || Object.keys(updates).some(k => !['page', 'sort'].includes(k)))) {
       search.delete("page");
     }
 
@@ -73,8 +92,8 @@ export default async function PublicCatalogPage({
 
       <div className="bg-white dark:bg-slate-900 border-b">
         <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Medical Equipment Catalog</h1>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl">Browse our complete selection of premium medical devices, hospital furniture, and clinical supplies.</p>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Electronics & IT Equipment Catalog</h1>
+          <p className="text-slate-600 dark:text-slate-400 max-w-2xl">Browse our complete selection of premium electronics, networking gear, and hardware solutions.</p>
         </div>
       </div>
 
@@ -142,6 +161,32 @@ export default async function PublicCatalogPage({
               ))}
             </ul>
           </div>
+          
+          {Object.entries(specFilters).map(([specKey, values]) => (
+            <div key={specKey}>
+              <h3 className="font-semibold mb-3 flex items-center"><SlidersHorizontal className="w-4 h-4 mr-2"/> {specKey}</h3>
+              <ul className="space-y-1.5 max-h-48 overflow-y-auto">
+                {values.map((val) => {
+                  const currentVals = specs[specKey] || [];
+                  const isActive = currentVals.includes(val);
+                  const nextVals = isActive ? currentVals.filter(v => v !== val) : [...currentVals, val];
+                  return (
+                    <li key={val}>
+                      <Link 
+                        href={buildUrl({ [specKey]: nextVals.length > 0 ? nextVals : null })} 
+                        className={`block px-3 py-2 rounded-md text-sm transition-colors ${isActive ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-600'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <input type="checkbox" readOnly checked={isActive} className="w-3.5 h-3.5 rounded border-slate-300" />
+                          {val}
+                        </div>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
         </aside>
 
         {/* Product Grid */}

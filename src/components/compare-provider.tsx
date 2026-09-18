@@ -45,8 +45,12 @@ export function CompareProvider({ children }: { children: ReactNode }) {
     setCompareItems(prev => {
       if (prev.includes(slug)) return prev;
       if (prev.length >= 4) {
-        // Drop the oldest to add the new one
-        return [...prev.slice(1), slug];
+        import("sonner").then(({ toast }) => {
+          toast.error("Compare Limit Reached", {
+            description: "You can only compare up to 4 products at a time.",
+          });
+        });
+        return prev;
       }
       return [...prev, slug];
     });
@@ -88,7 +92,7 @@ export function CompareProvider({ children }: { children: ReactNode }) {
                 Clear
               </Button>
               <Link 
-                href={`/products/compare?items=${compareItems.join(",")}`}
+                href={`/compare?items=${compareItems.join(",")}`}
                 className={buttonVariants({ size: "sm", className: "bg-blue-600 hover:bg-blue-500 text-white border-none shadow-sm" })}
               >
                 Compare Products

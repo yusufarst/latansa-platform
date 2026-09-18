@@ -110,6 +110,7 @@ export type CatalogFilters = {
   sort?: CatalogSort;
   page?: number;
   pageSize?: number;
+  specs?: Record<string, string | string[]>;
 };
 
 /** Convert internal storageKey to safe public URL */

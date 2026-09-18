@@ -62,6 +62,28 @@ export async function getPublicProducts(filters?: CatalogFilters): Promise<{
     );
   }
 
+  if (filters?.specs) {
+    for (const [key, value] of Object.entries(filters.specs)) {
+      if (!value) continue;
+      const values = Array.isArray(value) ? value : [value];
+      if (values.length === 0) continue;
+      
+      const { inArray } = await import("drizzle-orm");
+      
+      // We use a subquery to find product IDs that have this exact spec key and one of the allowed values
+      const matchingProductIds = db.select({ id: productSpecifications.productId })
+        .from(productSpecifications)
+        .where(
+          and(
+            eq(productSpecifications.key, key),
+            inArray(productSpecifications.value, values)
+          )
+        );
+        
+      conditions.push(inArray(products.id, matchingProductIds));
+    }
+  }
+
   const whereClause = and(...conditions);
 
   // Sort
@@ -276,4 +298,37 @@ export async function isProductPublished(slug: string): Promise<{ published: boo
     productId: row.id,
     productName: row.name,
   };
+}
+
+export async function getPublicSpecificationFilters(categorySlug?: string): Promise<Record<string, string[]>> {
+  const conditions = [eq(products.status, "PUBLISHED")];
+
+  if (categorySlug) {
+    const [cat] = await db.select({ id: categories.id }).from(categories).where(eq(categories.slug, categorySlug));
+    if (cat) {
+      conditions.push(eq(products.categoryId, cat.id));
+    }
+  }
+
+  const rows = await db
+    .select({
+      key: productSpecifications.key,
+      value: productSpecifications.value,
+    })
+    .from(productSpecifications)
+    .innerJoin(products, eq(productSpecifications.productId, products.id))
+    .where(and(...conditions));
+  const filterMap: Record<string, Set<string>> = {};
+
+  for (const row of rows) {
+    if (!filterMap[row.key]) filterMap[row.key] = new Set();
+    filterMap[row.key].add(row.value);
+  }
+
+  const result: Record<string, string[]> = {};
+  for (const [key, valSet] of Object.entries(filterMap)) {
+    result[key] = Array.from(valSet).sort();
+  }
+
+  return result;
 }

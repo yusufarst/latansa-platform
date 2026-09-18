@@ -6,8 +6,8 @@ import { getPublicProducts } from "@/modules/products/services/public";
 import { PublicProductDTO } from "@/modules/products/validations";
 
 export const metadata: Metadata = {
-  title: 'LATANSA | Premium Medical Equipment & Supplies',
-  description: 'Discover our curated catalog of high-quality medical devices, hospital furniture, and clinical solutions for your healthcare facility.',
+  title: 'LATANSA JOGJAKARTA | Premium Electronics & IT Equipment',
+  description: 'Discover our catalog of high-quality electronics, networking gear, and IT solutions for your business.',
 };
 
 export const dynamic = 'force-dynamic';
@@ -93,19 +93,6 @@ export default async function Home() {
               No featured products found. Run the seed script to populate data.
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Trust Section */}
-      <section className="bg-slate-100 dark:bg-slate-800/50 py-16 px-4">
-        <div className="container mx-auto text-center max-w-4xl">
-          <h2 className="text-2xl font-bold mb-10 text-slate-900 dark:text-white">Trusted by Healthcare Providers</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-60">
-            <div className="font-bold text-xl text-slate-500">KLINIK SEHAT</div>
-            <div className="font-bold text-xl text-slate-500">RS MEDIKA</div>
-            <div className="font-bold text-xl text-slate-500">LAB SENTRA</div>
-            <div className="font-bold text-xl text-slate-500">APOTEK JAYA</div>
-          </div>
         </div>
       </section>
 

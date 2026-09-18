@@ -4,9 +4,8 @@ import { requireRole } from "../auth/authorization";
 import {
   createCategory, updateCategory,
   createBrand, updateBrand,
-  createProduct, updateProduct,
+  createProductWithSpecs, updateProductWithSpecs,
   publishProduct, archiveProduct, unpublishProduct,
-  updateProductSpecifications,
 } from "./services/internal";
 import { categorySchema, brandSchema, productSchema, productSpecSchema } from "./validations";
 import { uploadProductImage, deleteProductImage, setPrimaryImage } from "./services/images";
@@ -124,17 +123,25 @@ export async function createProductAction(_prev: unknown, formData: FormData) {
     isFeatured: formData.get("isFeatured") === "true",
   };
 
+  const specsJson = formData.get("specifications") as string;
+  let parsedSpecs: z.infer<typeof productSpecSchema>[] = [];
+  if (specsJson) {
+    try {
+      const rawSpecs = JSON.parse(specsJson);
+      parsedSpecs = z.array(productSpecSchema).parse(rawSpecs);
+    } catch {
+      return { error: "Invalid specifications data provided." };
+    }
+  }
+
   let productId: string;
   try {
-    const parsed = productSchema.parse({ ...rawData, status: "DRAFT" });
-    const product = await createProduct(parsed);
+    const parsedProduct = productSchema.parse({ ...rawData, status: "DRAFT" });
+    const product = await createProductWithSpecs(parsedProduct, parsedSpecs);
     productId = product.id;
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Failed to create product" };
   }
-
-  // Handle specs
-  await handleSpecsFromFormData(productId, formData);
 
   revalidatePath("/internal/products");
   redirect(`/internal/products/${productId}`);
@@ -157,14 +164,24 @@ export async function updateProductAction(_prev: unknown, formData: FormData) {
     isFeatured: formData.get("isFeatured") === "true",
   };
 
+  const specsJson = formData.get("specifications") as string;
+  let parsedSpecs: z.infer<typeof productSpecSchema>[] | undefined = undefined;
+  if (specsJson) {
+    try {
+      const rawSpecs = JSON.parse(specsJson);
+      parsedSpecs = z.array(productSpecSchema).parse(rawSpecs);
+    } catch {
+      return { error: "Invalid specifications data provided." };
+    }
+  }
+
   try {
-    await updateProduct(id, rawData);
+    // We parse the rawData as partial for update, or just use the same schema without status
+    const parsedProduct = productSchema.omit({ status: true }).parse(rawData);
+    await updateProductWithSpecs(id, parsedProduct, parsedSpecs);
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Failed to update product" };
   }
-
-  // Handle specs
-  await handleSpecsFromFormData(id, formData);
 
   revalidatePath("/internal/products");
   revalidatePath(`/internal/products/${id}`);
@@ -248,18 +265,28 @@ export async function setPrimaryImageAction(imageId: string, productId: string) 
   return { success: true };
 }
 
-// ─── Helpers ────────────────────────────────────────────
-
-async function handleSpecsFromFormData(productId: string, formData: FormData) {
-  const specsJson = formData.get("specifications") as string;
-  if (!specsJson) return;
-
+export async function updateImageMetadataAction(imageId: string, productId: string, data: { altText?: string | null }) {
+  await requireRole(["SUPER_ADMIN", "PRODUCT_SALES_ADMIN"]);
+  const { updateImageMetadata } = await import("./services/images");
   try {
-    const specs = JSON.parse(specsJson) as Array<{ groupName?: string | null; key: string; value: string; sortOrder?: number }>;
-    const validated = z.array(productSpecSchema).parse(specs);
-    await updateProductSpecifications(productId, validated);
-  } catch {
-    // Silently skip invalid spec data rather than failing the entire save
-    console.warn("Failed to parse specifications");
+    await updateImageMetadata(imageId, productId, data);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to update image" };
   }
+  revalidatePath(`/internal/products/${productId}`);
+  return { success: true };
 }
+
+export async function updateImageOrderAction(productId: string, imageIds: string[]) {
+  await requireRole(["SUPER_ADMIN", "PRODUCT_SALES_ADMIN"]);
+  const { updateImageOrder } = await import("./services/images");
+  try {
+    await updateImageOrder(productId, imageIds);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to reorder images" };
+  }
+  revalidatePath(`/internal/products/${productId}`);
+  return { success: true };
+}
+
+// ─── Helpers ────────────────────────────────────────────

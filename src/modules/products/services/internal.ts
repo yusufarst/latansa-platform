@@ -90,48 +90,92 @@ export async function getBrandById(id: string) {
 
 // ─── Products ───────────────────────────────────────────
 
-export async function createProduct(input: {
-  sku: string; slug: string; name: string; categoryId: string; brandId: string;
-  publicPrice?: string | null; shortDescription?: string | null; description?: string | null;
-  trackingMode?: string; isFeatured?: boolean;
-}) {
+export async function createProductWithSpecs(
+  input: {
+    sku: string; slug: string; name: string; categoryId: string; brandId: string;
+    publicPrice?: string | null; shortDescription?: string | null; description?: string | null;
+    trackingMode?: string; isFeatured?: boolean;
+  },
+  specs: Array<{ key: string; value: string; groupName?: string | null; sortOrder?: number }>
+) {
   const { user } = await requireRole(["SUPER_ADMIN", "PRODUCT_SALES_ADMIN"]);
 
-  const [newProduct] = await db.insert(products).values({
-    sku: input.sku,
-    slug: input.slug,
-    name: input.name,
-    categoryId: input.categoryId,
-    brandId: input.brandId,
-    publicPrice: input.publicPrice,
-    shortDescription: input.shortDescription,
-    description: input.description,
-    trackingMode: input.trackingMode || "QUANTITY",
-    isFeatured: input.isFeatured ?? false,
-    status: "DRAFT",
-  }).returning();
+  return db.transaction(async (tx) => {
+    const [newProduct] = await tx.insert(products).values({
+      sku: input.sku,
+      slug: input.slug,
+      name: input.name,
+      categoryId: input.categoryId,
+      brandId: input.brandId,
+      publicPrice: input.publicPrice,
+      shortDescription: input.shortDescription,
+      description: input.description,
+      trackingMode: input.trackingMode || "QUANTITY",
+      isFeatured: input.isFeatured ?? false,
+      status: "DRAFT",
+    }).returning();
 
-  await appendAuditLog("PRODUCT_CREATED", { actorUserId: user.id, entityType: "PRODUCT", entityId: newProduct.id, metadata: { sku: newProduct.sku } });
-  return newProduct;
+    if (specs.length > 0) {
+      await tx.insert(productSpecifications).values(
+        specs.map((s, i) => ({
+          productId: newProduct.id,
+          groupName: s.groupName || null,
+          key: s.key,
+          value: s.value,
+          sortOrder: s.sortOrder ?? i,
+        }))
+      );
+    }
+
+    await appendAuditLog("PRODUCT_CREATED", { actorUserId: user.id, entityType: "PRODUCT", entityId: newProduct.id, metadata: { sku: newProduct.sku }, tx });
+    return newProduct;
+  });
 }
 
-export async function updateProduct(id: string, input: {
-  sku?: string; slug?: string; name?: string; categoryId?: string; brandId?: string;
-  publicPrice?: string | null; shortDescription?: string | null; description?: string | null;
-  isFeatured?: boolean; trackingMode?: string;
-}) {
+export async function updateProductWithSpecs(
+  id: string,
+  input: {
+    sku?: string; slug?: string; name?: string; categoryId?: string; brandId?: string;
+    publicPrice?: string | null; shortDescription?: string | null; description?: string | null;
+    isFeatured?: boolean; trackingMode?: string;
+  },
+  specs?: Array<{ key: string; value: string; groupName?: string | null; sortOrder?: number }>
+) {
   const { user } = await requireRole(["SUPER_ADMIN", "PRODUCT_SALES_ADMIN"]);
 
-  // Never auto-change status from update — use publishProduct/archiveProduct
-  const updateData: Record<string, unknown> = { ...input, updatedAt: new Date() };
+  return db.transaction(async (tx) => {
+    const updateData: Record<string, unknown> = { ...input, updatedAt: new Date() };
 
-  const [updatedProduct] = await db.update(products)
-    .set(updateData)
-    .where(eq(products.id, id))
-    .returning();
+    const [updatedProduct] = await tx.update(products)
+      .set(updateData)
+      .where(eq(products.id, id))
+      .returning();
 
-  await appendAuditLog("PRODUCT_UPDATED", { actorUserId: user.id, entityType: "PRODUCT", entityId: id, metadata: { changedKeys: Object.keys(input) } });
-  return updatedProduct;
+    if (specs !== undefined) {
+      await tx.delete(productSpecifications).where(eq(productSpecifications.productId, id));
+      if (specs.length > 0) {
+        await tx.insert(productSpecifications).values(
+          specs.map((s, i) => ({
+            productId: id,
+            groupName: s.groupName || null,
+            key: s.key,
+            value: s.value,
+            sortOrder: s.sortOrder ?? i,
+          }))
+        );
+      }
+      await appendAuditLog("PRODUCT_SPECIFICATIONS_UPDATED", {
+        actorUserId: user.id,
+        entityType: "PRODUCT",
+        entityId: id,
+        metadata: { specCount: specs.length },
+        tx
+      });
+    }
+
+    await appendAuditLog("PRODUCT_UPDATED", { actorUserId: user.id, entityType: "PRODUCT", entityId: id, metadata: { changedKeys: Object.keys(input) }, tx });
+    return updatedProduct;
+  });
 }
 
 export async function publishProduct(id: string) {

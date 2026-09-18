@@ -73,6 +73,13 @@ COMPLETED:
 - Public catalog logic moved to client components for hydration safety
 - Catalog layout fixed and image placeholders standardized
 - Playwright E2E tests added and passed for Auth and Catalog flows
+- Canonical audit fixes completed:
+  - image metadata and sorting backend implementation
+  - specification dynamic filter implementation for public catalog
+  - compare route deduplication and 4-item hard limit enforced
+  - WhatsApp tracking moved to safe routing boundary
+  - sitemap base URL logic hardened
+  - clean lint and typecheck execution
 
 CURRENT TASK:
 - implement inventory ledger logic and internal warehouse layout

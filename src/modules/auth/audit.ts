@@ -8,9 +8,12 @@ export async function appendAuditLog(
     entityType?: string | null;
     entityId?: string | null;
     metadata?: Record<string, unknown> | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tx?: any;
   }
 ) {
-  await db.insert(auditLogs).values({
+  const dbOrTx = params?.tx || db;
+  await dbOrTx.insert(auditLogs).values({
     action,
     actorUserId: params?.actorUserId,
     entityType: params?.entityType,
