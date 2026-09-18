@@ -7,6 +7,10 @@ export const dynamic = 'force-dynamic';
 
 const baseUrl = process.env.PUBLIC_SITE_URL || (process.env.NODE_ENV !== 'production' ? process.env.APP_URL || 'http://localhost:3000' : '');
 
+if (process.env.NODE_ENV === 'production' && !process.env.PUBLIC_SITE_URL) {
+  throw new Error("PUBLIC_SITE_URL environment variable is required in production for valid sitemap generation.");
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Base static routes
   const routes = [

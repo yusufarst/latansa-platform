@@ -71,18 +71,29 @@ export async function uploadProductImage(
   }
 
   // Persist metadata
-  const [image] = await db
-    .insert(productImages)
-    .values({
-      productId,
-      storageKey: `products/${productId}/${safeFilename}`,
-      altText: options?.altText || null,
-      sortOrder: nextSortOrder,
-      isPrimary: options?.isPrimary ?? existingImages.length === 0,
-      mimeType,
-      fileSize: file.size,
-    })
-    .returning();
+  let image;
+  try {
+    const [inserted] = await db
+      .insert(productImages)
+      .values({
+        productId,
+        storageKey: `products/${productId}/${safeFilename}`,
+        altText: options?.altText || null,
+        sortOrder: nextSortOrder,
+        isPrimary: options?.isPrimary ?? existingImages.length === 0,
+        mimeType,
+        fileSize: file.size,
+      })
+      .returning();
+    image = inserted;
+  } catch (error) {
+    try {
+      await unlink(filePath);
+    } catch (unlinkError) {
+      console.warn(`Failed to delete orphan file ${filePath} after DB insert failure`, unlinkError);
+    }
+    throw error;
+  }
 
   await appendAuditLog("PRODUCT_IMAGE_UPLOADED", {
     actorUserId: user.id,
@@ -132,17 +143,19 @@ export async function updateImageOrder(
 ) {
   const { user } = await requireRole(["SUPER_ADMIN", "PRODUCT_SALES_ADMIN"]);
 
-  for (let i = 0; i < imageIds.length; i++) {
-    await db
-      .update(productImages)
-      .set({ sortOrder: i })
-      .where(
-        and(
-          eq(productImages.id, imageIds[i]),
-          eq(productImages.productId, productId)
-        )
-      );
-  }
+  await db.transaction(async (tx) => {
+    for (let i = 0; i < imageIds.length; i++) {
+      await tx
+        .update(productImages)
+        .set({ sortOrder: i })
+        .where(
+          and(
+            eq(productImages.id, imageIds[i]),
+            eq(productImages.productId, productId)
+          )
+        );
+    }
+  });
 
   await appendAuditLog("PRODUCT_IMAGES_REORDERED", {
     actorUserId: user.id,
@@ -183,19 +196,21 @@ export async function updateImageMetadata(
 export async function setPrimaryImage(imageId: string, productId: string) {
   const { user } = await requireRole(["SUPER_ADMIN", "PRODUCT_SALES_ADMIN"]);
 
-  // Unset current primary
-  await db
-    .update(productImages)
-    .set({ isPrimary: false })
-    .where(eq(productImages.productId, productId));
+  await db.transaction(async (tx) => {
+    // Unset current primary
+    await tx
+      .update(productImages)
+      .set({ isPrimary: false })
+      .where(eq(productImages.productId, productId));
 
-  // Set new primary
-  await db
-    .update(productImages)
-    .set({ isPrimary: true })
-    .where(
-      and(eq(productImages.id, imageId), eq(productImages.productId, productId))
-    );
+    // Set new primary
+    await tx
+      .update(productImages)
+      .set({ isPrimary: true })
+      .where(
+        and(eq(productImages.id, imageId), eq(productImages.productId, productId))
+      );
+  });
 
   await appendAuditLog("PRODUCT_IMAGE_PRIMARY_SET", {
     actorUserId: user.id,

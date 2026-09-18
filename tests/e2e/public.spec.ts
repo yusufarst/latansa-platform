@@ -19,10 +19,11 @@ test.describe('Public User Journey', () => {
       await expect(page).toHaveURL(/.*category=/);
       
       // Wait for products to load
-      await page.waitForSelector('a.group');
+      // Wait for products to load
+      await page.waitForSelector('div.group');
       
       // 3. Click into a product
-      const firstProductLink = page.locator('a.group').first();
+      const firstProductLink = page.locator('div.group a').first();
       await firstProductLink.click();
       
       // Ensure we are on the product page

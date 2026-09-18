@@ -24,6 +24,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     await recordWhatsAppClickEvent(productInfo.productId, { source: "whatsapp_redirect_route" });
   } catch (e) {
     console.error("Failed to record WA event:", e);
+    return new NextResponse("Failed to record analytics. Please try again later.", { status: 500 });
   }
 
   const message = `Halo LATANSA JOGJAKARTA,\nsaya tertarik dengan ${productInfo.productName} (${productInfo.sku}).\nMohon informasi harga dan ketersediaannya.`;

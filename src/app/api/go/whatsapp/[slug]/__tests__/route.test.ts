@@ -71,4 +71,21 @@ describe('WhatsApp API Route', () => {
 
     env.NEXT_PUBLIC_WHATSAPP_NUMBER = originalNumber; // Restore
   });
+
+  it('fails safely without redirecting if analytics tracking fails', async () => {
+    vi.mocked(publicService.isProductPublished).mockResolvedValue({
+      published: true,
+      productId: 'prod-1',
+      productName: 'Laptop Asus',
+      sku: 'SKU-001',
+    });
+
+    vi.mocked(publicService.recordWhatsAppClickEvent).mockRejectedValue(new Error('DB Error'));
+
+    const req = new NextRequest('http://localhost:3000/api/go/whatsapp/laptop-asus');
+    const res = await GET(req, { params: Promise.resolve({ slug: 'laptop-asus' }) });
+
+    expect(res.status).toBe(500);
+    expect(await res.text()).toBe('Failed to record analytics. Please try again later.');
+  });
 });

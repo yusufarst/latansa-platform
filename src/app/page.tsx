@@ -62,28 +62,27 @@ export default async function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featured.map((product: PublicProductDTO) => (
-            <div key={product.slug} className="group flex flex-col bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div className="aspect-square bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center p-4">
-                {product.images?.[0] ? (
-                  <img src={product.images[0].url} alt={product.name} className="max-w-full max-h-full object-contain" />
-                ) : (
-                  <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">No Image</div>
-                )}
-              </div>
-              <div className="p-5 flex flex-col flex-1">
-                <div className="text-xs font-medium text-slate-500 mb-1">{product.brand.name}</div>
-                <h3 className="font-semibold text-lg mb-2 line-clamp-2">{product.name}</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 flex-1">
-                  {product.shortDescription || product.sku}
-                </p>
-                <div className="mt-auto flex items-center justify-between">
-                  <span className="font-bold">
-                    {product.publicPrice ? `Rp ${parseInt(product.publicPrice).toLocaleString('id-ID')}` : 'Contact for Price'}
-                  </span>
+            <div key={product.slug} className="group relative flex flex-col bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <Link href={`/products/${product.slug}`} className="flex flex-col flex-1 focus:outline-none">
+                <div className="aspect-square bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center p-4">
+                  {product.images?.[0] ? (
+                    <img src={product.images[0].url} alt={product.name} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">No Image</div>
+                  )}
                 </div>
-              </div>
-              <Link href={`/products/${product.slug}`} className="absolute inset-0 z-10">
-                <span className="sr-only">View {product.name}</span>
+                <div className="p-5 flex flex-col flex-1">
+                  <div className="text-xs font-medium text-slate-500 mb-1">{product.brand.name}</div>
+                  <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors">{product.name}</h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 flex-1">
+                    {product.shortDescription || product.sku}
+                  </p>
+                  <div className="mt-auto flex items-center justify-between">
+                    <span className="font-bold">
+                      {product.publicPrice ? `Rp ${parseInt(product.publicPrice).toLocaleString('id-ID')}` : 'Contact for Price'}
+                    </span>
+                  </div>
+                </div>
               </Link>
             </div>
           ))}

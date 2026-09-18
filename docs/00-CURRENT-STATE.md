@@ -71,16 +71,11 @@ COMPLETED:
 - Deterministic catalog data seeding script verified
 - Internal product management (Create/Edit) forms implemented and type-checked
 - Public catalog logic moved to client components for hydration safety
-- Catalog layout fixed and image placeholders standardized
-- Playwright E2E tests added and passed for Auth and Catalog flows
-- Canonical audit fixes completed:
-  - image metadata and sorting backend implementation
-  - specification dynamic filter implementation for public catalog
-  - compare route deduplication and 4-item hard limit enforced
-  - WhatsApp tracking moved to safe routing boundary
-  - sitemap base URL logic hardened
-  - clean lint and typecheck execution
-
+- E2E acceptance tests for product admin, catalog, compare, and styling are in place.
+- Real transactional integrity for `product_images` and `product_specifications` verified.
+- RBAC validation on mutation handlers verified (`rbac.test.ts`).
+- Sitemap generation resilient against missing URLs in production.
+- Public Catalog styling responsive behavior verified.
 - Final Catalog Product/Catalog corrections verified:
   - specification search expansion implemented
   - WhatsApp mobile CTA standardized
