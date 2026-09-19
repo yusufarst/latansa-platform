@@ -5,8 +5,8 @@ test.describe('Public User Journey', () => {
     // 1. Browse products
     await page.goto('/');
     
-    // Click "Browse Catalog"
-    await page.click('text=Browse Catalog');
+    // Click "Lihat Katalog" / "Browse Catalog"
+    await page.click('text=/Lihat Katalog|Browse Catalog/i');
     await expect(page).toHaveURL(/.*\/products/);
     
     // 2. Apply a filter (assuming there's a category or brand link)

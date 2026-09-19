@@ -12,16 +12,16 @@ export function CatalogSort({ currentSort }: { currentSort?: string }) {
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const params = new URLSearchParams(searchParams.toString());
       const value = e.target.value;
-      
+
       if (value === "default") {
         params.delete("sort");
       } else {
         params.set("sort", value);
       }
-      
+
       // Reset page when sorting changes
       params.delete("page");
-      
+
       router.push(`${pathname}?${params.toString()}`);
     },
     [router, pathname, searchParams]
@@ -29,18 +29,20 @@ export function CatalogSort({ currentSort }: { currentSort?: string }) {
 
   return (
     <div className="flex items-center gap-2">
-      <label htmlFor="sort" className="font-medium text-slate-600">Sort by:</label>
-      <select 
+      <label htmlFor="sort" className="text-xs sm:text-sm font-medium text-muted-foreground whitespace-nowrap">
+        Urutkan:
+      </label>
+      <select
         id="sort"
-        className="h-10 px-3 py-2 rounded-md border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+        className="h-9 px-3 py-1 rounded-md border border-border/80 text-xs sm:text-sm font-medium text-foreground bg-card focus:outline-hidden focus:ring-2 focus:ring-brand/30 transition-all cursor-pointer"
         defaultValue={currentSort || "default"}
         onChange={handleSortChange}
       >
-        <option value="default">Relevance & Featured</option>
-        <option value="newest">Newest Arrivals</option>
-        <option value="name-az">Name (A-Z)</option>
-        <option value="price-low">Price (Low to High)</option>
-        <option value="price-high">Price (High to Low)</option>
+        <option value="default">Relevansi & Pilihan</option>
+        <option value="newest">Produk Terbaru</option>
+        <option value="name-az">Nama (A-Z)</option>
+        <option value="price-low">Harga (Terendah - Tertinggi)</option>
+        <option value="price-high">Harga (Tertinggi - Terendah)</option>
       </select>
     </div>
   );

@@ -2,7 +2,7 @@ PROJECT:
 LATANSA Platform
 
 PHASE:
-PRODUCT MANAGEMENT & PUBLIC CATALOG VERIFIED / INVENTORY NEXT
+PREMIUM UI SYSTEM COMPLETE / INVENTORY NEXT
 
 COMPLETED:
 - GitHub repository created and connected
@@ -66,32 +66,50 @@ COMPLETED:
 - Product, Category, and Brand internal RBAC services with audit logs
 - Public catalog read-only query services with DTO projections
 - Internal product management UI layout and scaffolding
-- Premium public corporate homepage and dynamic catalog storefront
 - WhatsApp conversion tracking API route
 - Deterministic catalog data seeding script verified
 - Internal product management (Create/Edit) forms implemented and type-checked
 - Public catalog logic moved to client components for hydration safety
-- E2E acceptance tests for product admin, catalog, compare, and styling are in place.
-- Real transactional integrity for `product_images` and `product_specifications` verified.
-- RBAC validation on mutation handlers verified (`rbac.test.ts`).
-- Sitemap generation resilient against missing URLs in production.
-- Public Catalog styling responsive behavior verified.
-- Final Catalog Product/Catalog corrections verified:
-  - specification search expansion implemented
-  - WhatsApp mobile CTA standardized
-  - atomicity for specification updates verified
-  - E2E auth timeouts documented/bypassed for CI
-  - clean final quality gates (lint, test, build) passed
-- Final Small Acceptance Fixes before push:
-  - restored style.spec.ts and db-transaction.test.ts tests
-  - fixed flaky E2E selectors in admin.spec.ts
-  - cleaned all trailing whitespaces
-  - fixed Docker production build crash in sitemap.ts
-  - proved Docker standalone runtime and CSS styling acceptances pass
-
+- E2E acceptance tests for product admin, catalog, compare, and styling are in place
+- Real transactional integrity for `product_images` and `product_specifications` verified
+- RBAC validation on mutation handlers verified (`rbac.test.ts`)
+- Sitemap generation resilient against missing URLs in production
+- Premium LATANSA design tokens derived from official logo:
+  - warm white / soft stone canvas
+  - graphite typography
+  - official deep burgundy / wine-red brand accent
+  - subtle warm-gray borders and restrained corner radii (6px–8px)
+  - zero generic SaaS blue as primary brand color
+- Full Bahasa Indonesia localization:
+  - Public UI default language: Bahasa Indonesia
+  - Internal UI default language: Bahasa Indonesia
+  - Preserved standard technical terms (SKU, RFQ, QC, barcode, serial number, model, Wi-Fi, USB, Bluetooth)
+- Shared public component infrastructure:
+  - `PublicHeader` with official LATANSA logo and mobile Sheet drawer
+  - `PublicFooter` with corporate profile, B2B services, and copyright
+  - `ProductCard` with high-value layout, brand tag, SKU meta, IDR pricing, and compare affordance
+  - `ProductImagePlaceholder` elegant vector device graphic (eliminated plain text "NO IMAGE")
+  - `EmptyState` component for zero results and empty comparisons
+- Redesigned Homepage (`/`):
+  - Factual B2B positioning for electronics & IT equipment
+  - Category browsing and featured products grid
+  - Corporate capabilities and WhatsApp B2B consultation CTA
+- Redesigned Public Catalog (`/products`):
+  - Clean desktop filter rail and responsive mobile filter Sheet drawer
+  - Localized sorting options and pagination
+- Redesigned Product Detail (`/products/[slug]`):
+  - Refined gallery with active brand ring and elegant fallback placeholder
+  - Technical specifications grouped definition tables
+  - WhatsApp CTA and related products
+- Redesigned Product Comparison (`/compare`):
+  - 4-product decision tool with sticky specification headers
+  - Empty slot actions and intentional mobile horizontal scroll
+- Refined Auth & Internal Shell Baseline:
+  - `/login` restrained card with official branding and Bahasa Indonesia form
+  - `/internal` layout with Indonesian navigation and active brand indicators
 
 CURRENT TASK:
-- Implement inventory ledger logic and internal warehouse layout
+- Inventory / Warehouse foundation
 
 NEXT:
 - ledger entries

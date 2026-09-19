@@ -19,7 +19,6 @@ export function CompareProvider({ children }: { children: ReactNode }) {
   const [compareItems, setCompareItems] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
 
-  // Use a timeout to avoid synchronous setState inside an effect (hydration mismatch fix)
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true);
@@ -46,8 +45,8 @@ export function CompareProvider({ children }: { children: ReactNode }) {
       if (prev.includes(slug)) return prev;
       if (prev.length >= 4) {
         import("sonner").then(({ toast }) => {
-          toast.error("Compare Limit Reached", {
-            description: "You can only compare up to 4 products at a time.",
+          toast.error("Batas Perbandingan", {
+            description: "Anda hanya dapat membandingkan maksimal 4 produk sekaligus.",
           });
         });
         return prev;
@@ -70,32 +69,39 @@ export function CompareProvider({ children }: { children: ReactNode }) {
     <CompareContext.Provider value={{ compareItems, addCompareItem, removeCompareItem, clearCompare, isInCompare }}>
       {children}
       {mounted && compareItems.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-900 text-white shadow-2xl animate-in slide-in-from-bottom-full border-t border-slate-700">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="bg-slate-800 p-2 rounded-full hidden sm:block">
-                <Scale className="w-5 h-5 text-blue-400" />
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-stone-900 text-stone-50 shadow-xl border-t border-stone-800 animate-in slide-in-from-bottom-5 duration-200">
+          <div className="container mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-stone-800 p-2 rounded-md hidden sm:flex items-center justify-center text-stone-300">
+                <Scale className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold">{compareItems.length} {compareItems.length === 1 ? 'Product' : 'Products'} Selected</div>
-                <div className="text-xs text-slate-400">Add up to 4 products to compare</div>
+                <div className="font-semibold text-sm text-stone-100">
+                  {compareItems.length} Produk Dipilih
+                </div>
+                <div className="text-xs text-stone-400">
+                  Bandingkan spesifikasi hingga 4 produk
+                </div>
               </div>
             </div>
-            
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={clearCompare}
-                className="text-slate-300 hover:text-white hover:bg-slate-800"
+                className="text-stone-300 hover:text-stone-100 hover:bg-stone-800 text-xs h-9 px-3"
               >
-                Clear
+                Hapus
               </Button>
-              <Link 
+              <Link
                 href={`/compare?items=${compareItems.join(",")}`}
-                className={buttonVariants({ size: "sm", className: "bg-blue-600 hover:bg-blue-500 text-white border-none shadow-sm" })}
+                className={buttonVariants({
+                  size: "sm",
+                  className: "bg-brand hover:bg-brand-hover text-brand-foreground text-xs h-9 px-4 font-medium shadow-xs",
+                })}
               >
-                Compare Products
+                Bandingkan Produk
               </Link>
             </div>
           </div>
@@ -108,7 +114,13 @@ export function CompareProvider({ children }: { children: ReactNode }) {
 export function useCompare() {
   const context = useContext(CompareContext);
   if (context === undefined) {
-    throw new Error("useCompare must be used within a CompareProvider");
+    return {
+      compareItems: [],
+      addCompareItem: () => {},
+      removeCompareItem: () => {},
+      clearCompare: () => {},
+      isInCompare: () => false,
+    };
   }
   return context;
 }

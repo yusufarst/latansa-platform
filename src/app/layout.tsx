@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CompareProvider } from "@/components/compare-provider";
 
 export const metadata: Metadata = {
-  title: "LATANSA Platform",
-  description: "Premium LATANSA electronics platform",
+  title: "LATANSA Platform | Perangkat Elektronik & Solusi IT Bisnis",
+  description: "Platform pengadaan perangkat elektronik, perlengkapan IT, dan kebutuhan teknologi bisnis terpercaya.",
 };
 
 export default function RootLayout({
@@ -14,9 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
-        <TooltipProvider>{children}</TooltipProvider>
+    <html lang="id" suppressHydrationWarning>
+      <body className="antialiased font-sans text-foreground bg-background">
+        <TooltipProvider>
+          <CompareProvider>{children}</CompareProvider>
+        </TooltipProvider>
       </body>
     </html>
   );

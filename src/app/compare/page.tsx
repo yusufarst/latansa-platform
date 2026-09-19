@@ -1,39 +1,85 @@
 import { getProductsForCompare } from "@/modules/products/services/public";
 import Link from "next/link";
-import { ArrowLeft, Check, Minus, Package, X } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { ArrowLeft, Check, Minus, Plus, X, Trash2 } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { PublicHeader } from "@/components/public/public-header";
+import { PublicFooter } from "@/components/public/public-footer";
+import { PageContainer } from "@/components/public/page-container";
+import { EmptyState } from "@/components/public/empty-state";
+import { ProductImagePlaceholder } from "@/components/public/product-image-placeholder";
+import { cn } from "@/lib/utils";
+
+export const metadata = {
+  title: "Bandingkan Produk | LATANSA",
+  description: "Perbandingan fitur teknis dan spesifikasi detail hingga 4 perangkat elektronik sekaligus.",
+};
 
 export default async function ComparePage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const params = await searchParams;
-  
-  // Extract slugs from the `items` query parameter (comma-separated)
-  const itemsParam = typeof params.items === 'string' ? params.items : "";
-  const slugs = itemsParam.split(",").map(s => s.trim()).filter(Boolean);
-  
+
+  // Extract slugs from the `items` query parameter
+  const itemsParam = typeof params.items === "string" ? params.items : "";
+  const slugs = itemsParam
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   if (slugs.length === 0) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Compare Products</h1>
-        <p className="text-slate-500 mb-6">No products selected for comparison.</p>
-        <Link href="/products" className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 bg-blue-600 text-white hover:bg-blue-700">
-          Browse Catalog
-        </Link>
+      <div className="min-h-screen bg-background flex flex-col selection:bg-brand/15 selection:text-brand">
+        <PublicHeader />
+        <main className="flex-1 py-16">
+          <PageContainer size="narrow">
+            <EmptyState
+              title="Belum Ada Produk yang Dipilih"
+              description="Pilih hingga 4 produk dari katalog kami untuk membandingkan spesifikasi teknis dan harga secara berdampingan."
+              action={
+                <Link
+                  href="/products"
+                  className={cn(
+                    buttonVariants(),
+                    "bg-brand hover:bg-brand-hover text-brand-foreground text-xs font-semibold px-5 h-9 shadow-xs"
+                  )}
+                >
+                  Lihat Katalog Produk
+                </Link>
+              }
+            />
+          </PageContainer>
+        </main>
+        <PublicFooter />
       </div>
     );
   }
 
   if (slugs.length > 4) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Too Many Products</h1>
-        <p className="text-slate-500 mb-6">You can only compare up to 4 products at a time.</p>
-        <Link href={`/compare?items=${slugs.slice(0, 4).join(",")}`} className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 bg-blue-600 text-white hover:bg-blue-700">
-          Compare First 4
-        </Link>
+      <div className="min-h-screen bg-background flex flex-col selection:bg-brand/15 selection:text-brand">
+        <PublicHeader />
+        <main className="flex-1 py-16">
+          <PageContainer size="narrow">
+            <EmptyState
+              title="Maksimal 4 Produk"
+              description="Untuk menjaga kenyamanan dan keterbacaan spesifikasi teknis, Anda hanya dapat membandingkan maksimal 4 produk sekaligus."
+              action={
+                <Link
+                  href={`/compare?items=${slugs.slice(0, 4).join(",")}`}
+                  className={cn(
+                    buttonVariants(),
+                    "bg-brand hover:bg-brand-hover text-brand-foreground text-xs font-semibold px-5 h-9 shadow-xs"
+                  )}
+                >
+                  Bandingkan 4 Produk Pertama
+                </Link>
+              }
+            />
+          </PageContainer>
+        </main>
+        <PublicFooter />
       </div>
     );
   }
@@ -42,170 +88,251 @@ export default async function ComparePage({
 
   // Collect all unique specification keys across all products
   const allSpecKeys = new Set<string>();
-  products.forEach(p => {
-    p.specifications.forEach(s => allSpecKeys.add(s.key));
+  products.forEach((p) => {
+    p.specifications.forEach((s) => allSpecKeys.add(s.key));
   });
   const specKeysArray = Array.from(allSpecKeys).sort();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-slate-900 shadow-sm">
-        <div className="container flex h-16 items-center px-4 md:px-8 mx-auto justify-between">
-          <Link href="/" className="font-bold text-xl tracking-tight text-blue-600">LATANSA</Link>
-          <nav className="hidden md:flex gap-6">
-            <Link href="/" className="text-sm font-medium hover:text-blue-600 transition-colors">Home</Link>
-            <Link href="/products" className="text-sm font-medium hover:text-blue-600 transition-colors">Catalog</Link>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col selection:bg-brand/15 selection:text-brand">
+      {/* Shared Public Header */}
+      <PublicHeader />
 
-      <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl overflow-hidden">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <Link href="/products" className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors mb-2">
-              <ArrowLeft className="w-4 h-4 mr-1" /> Back to Catalog
-            </Link>
-            <h1 className="text-3xl font-bold tracking-tight">Compare Products</h1>
+      {/* Title & Action Bar */}
+      <div className="border-b border-border/80 bg-stone-50/50 dark:bg-stone-900/30 py-6 md:py-8">
+        <PageContainer>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <Link
+                href="/products"
+                className="inline-flex items-center text-xs font-medium text-muted-foreground hover:text-foreground transition-colors mb-1.5"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Kembali ke Katalog
+              </Link>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                Bandingkan Produk
+              </h1>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Evaluasi spesifikasi teknis dan estimasi harga berdampingan.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Link
+                href="/products"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "text-xs h-9 px-3.5 border-border/80 text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+                )}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Hapus Perbandingan</span>
+              </Link>
+            </div>
           </div>
-          <Link href="/products" className={buttonVariants({ variant: "outline" })}>
-            Clear Comparison
-          </Link>
-        </div>
+        </PageContainer>
+      </div>
 
-        <div className="bg-white border rounded-xl shadow-sm overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
-            <thead>
-              <tr>
-                <th className="w-1/5 p-4 border-b border-r bg-slate-50 font-semibold text-slate-500">
-                  Product Overview
-                </th>
-                {products.map(product => (
-                  <th key={product.slug} className="w-1/5 p-6 border-b align-top relative">
-                    <div className="flex flex-col h-full">
-                      <div className="aspect-square bg-slate-100 rounded-lg overflow-hidden flex items-center justify-center mb-4 p-4 relative">
-                        {product.images?.[0] ? (
-                          <img src={product.images[0].url} alt={product.name} className="max-w-full max-h-full object-contain" />
-                        ) : (
-                          <Package className="w-8 h-8 text-slate-300" />
-                        )}
-                        <Link 
-                          href={`/compare?items=${slugs.filter(s => s !== product.slug).join(",")}`}
-                          className="absolute top-2 right-2 bg-white/80 hover:bg-white text-slate-600 rounded-full p-1 shadow-sm backdrop-blur-sm transition-colors"
-                          title="Remove from comparison"
-                        >
-                          <X className="w-4 h-4" />
-                        </Link>
-                      </div>
-                      <div className="text-xs font-semibold text-blue-600 mb-1 uppercase tracking-wide">{product.brand.name}</div>
-                      <h3 className="font-bold text-lg leading-tight mb-2 flex-1">{product.name}</h3>
-                      <div className="text-xl font-bold text-slate-900 mt-auto pt-4">
-                        {product.publicPrice ? `Rp ${parseInt(product.publicPrice).toLocaleString('id-ID')}` : 'Ask Price'}
-                      </div>
-                      <Link href={`/products/${product.slug}`} className={buttonVariants({ variant: "default", className: "w-full mt-4 bg-blue-600 hover:bg-blue-700" })}>
-                        View Details
-                      </Link>
-                    </div>
-                  </th>
-                ))}
-                {/* Fill empty columns up to 4 */}
-                {Array.from({ length: 4 - products.length }).map((_, i) => (
-                  <th key={`empty-${i}`} className="w-1/5 p-6 border-b align-top bg-slate-50/50 border-dashed">
-                    <div className="flex flex-col items-center justify-center h-full text-center text-slate-400">
-                      <div className="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center mb-4">
-                        <PlusIcon className="w-6 h-6" />
-                      </div>
-                      <span className="text-sm font-medium">Add another product</span>
-                      <Link href="/products" className={buttonVariants({ variant: "outline", size: "sm", className: "mt-4" })}>
-                        Browse
-                      </Link>
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              <tr>
-                <th className="p-4 border-b border-r bg-slate-50 font-medium text-slate-600">Category</th>
-                {products.map(product => (
-                  <td key={product.slug} className="p-4 border-b text-slate-900 font-medium">{product.category.name}</td>
-                ))}
-                {Array.from({ length: 4 - products.length }).map((_, i) => <td key={`empty-cat-${i}`} className="p-4 border-b bg-slate-50/50"></td>)}
-              </tr>
-              <tr>
-                <th className="p-4 border-b border-r bg-slate-50 font-medium text-slate-600">SKU</th>
-                {products.map(product => (
-                  <td key={product.slug} className="p-4 border-b text-slate-600">{product.sku}</td>
-                ))}
-                {Array.from({ length: 4 - products.length }).map((_, i) => <td key={`empty-sku-${i}`} className="p-4 border-b bg-slate-50/50"></td>)}
-              </tr>
-              <tr>
-                <th className="p-4 border-b border-r bg-slate-50 font-medium text-slate-600 align-top">Description</th>
-                {products.map(product => (
-                  <td key={product.slug} className="p-4 border-b text-slate-600 align-top">
-                    <p className="line-clamp-4">{product.shortDescription || "No description"}</p>
-                  </td>
-                ))}
-                {Array.from({ length: 4 - products.length }).map((_, i) => <td key={`empty-desc-${i}`} className="p-4 border-b bg-slate-50/50"></td>)}
-              </tr>
+      {/* Comparison Grid Table */}
+      <main className="flex-1 py-8 md:py-12">
+        <PageContainer>
+          <div className="border border-border/80 rounded-lg bg-card shadow-2xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[760px]">
+                <thead>
+                  <tr>
+                    {/* Fixed Spec Label Column Header */}
+                    <th className="w-1/5 p-4 sm:p-5 border-b border-r border-border/80 bg-stone-50/70 dark:bg-stone-900/50 text-xs font-bold uppercase tracking-wider text-muted-foreground align-bottom sticky left-0 z-20">
+                      Spesifikasi & Fitur
+                    </th>
 
-              {/* Specifications Header */}
-              {specKeysArray.length > 0 && (
-                <tr>
-                  <th colSpan={5} className="p-4 border-b bg-slate-100 font-bold text-slate-900 uppercase tracking-wider text-xs">
-                    Technical Specifications
-                  </th>
-                </tr>
-              )}
+                    {/* Product Cards Header */}
+                    {products.map((product) => (
+                      <th
+                        key={product.slug}
+                        className="w-1/5 p-4 sm:p-5 border-b border-border/80 align-top relative bg-card"
+                      >
+                        <div className="flex flex-col h-full">
+                          {/* Image Container */}
+                          <div className="aspect-square bg-stone-50 dark:bg-stone-900/40 rounded-md border border-border/60 overflow-hidden flex items-center justify-center mb-3 p-3 relative">
+                            {product.images?.[0] ? (
+                              <img
+                                src={product.images[0].url}
+                                alt={product.name}
+                                className="max-w-full max-h-full object-contain"
+                              />
+                            ) : (
+                              <ProductImagePlaceholder label={product.brand.name} iconSize="sm" />
+                            )}
+                            <Link
+                              href={`/compare?items=${slugs.filter((s) => s !== product.slug).join(",")}`}
+                              className="absolute top-2 right-2 bg-card/90 hover:bg-card text-muted-foreground hover:text-foreground rounded-full p-1 border border-border/80 shadow-2xs transition-colors"
+                              title="Hapus dari perbandingan"
+                              aria-label={`Hapus ${product.name} dari perbandingan`}
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </Link>
+                          </div>
 
-              {/* Specification Rows */}
-              {specKeysArray.map(specKey => (
-                <tr key={specKey} className="hover:bg-slate-50/50 transition-colors">
-                  <th className="p-4 border-b border-r bg-slate-50 font-medium text-slate-600">{specKey}</th>
-                  {products.map(product => {
-                    const spec = product.specifications.find(s => s.key === specKey);
-                    return (
-                      <td key={product.slug} className="p-4 border-b text-slate-900">
-                        {spec ? (
-                          spec.value.toLowerCase() === "yes" || spec.value.toLowerCase() === "true" ? (
-                            <Check className="w-5 h-5 text-green-600" />
-                          ) : spec.value.toLowerCase() === "no" || spec.value.toLowerCase() === "false" ? (
-                            <Minus className="w-5 h-5 text-slate-400" />
-                          ) : (
-                            spec.value
-                          )
-                        ) : (
-                          <span className="text-slate-300">-</span>
-                        )}
+                          {/* Brand & Name */}
+                          <div className="text-[10px] font-semibold text-brand mb-1 uppercase tracking-wider">
+                            {product.brand.name}
+                          </div>
+                          <h3 className="font-semibold text-xs sm:text-sm text-foreground leading-snug mb-2 line-clamp-2">
+                            {product.name}
+                          </h3>
+
+                          {/* Price */}
+                          <div className="text-sm sm:text-base font-bold text-foreground mt-auto pt-2">
+                            {product.publicPrice
+                              ? `Rp ${parseInt(product.publicPrice, 10).toLocaleString("id-ID")}`
+                              : "Hubungi untuk Harga"}
+                          </div>
+
+                          {/* View Detail CTA */}
+                          <Link
+                            href={`/products/${product.slug}`}
+                            className={cn(
+                              buttonVariants({ size: "sm" }),
+                              "w-full mt-3 h-8 text-xs font-semibold bg-brand hover:bg-brand-hover text-brand-foreground shadow-2xs"
+                            )}
+                          >
+                            Lihat Detail
+                          </Link>
+                        </div>
+                      </th>
+                    ))}
+
+                    {/* Empty Slots up to 4 */}
+                    {Array.from({ length: 4 - products.length }).map((_, i) => (
+                      <th
+                        key={`empty-${i}`}
+                        className="w-1/5 p-4 sm:p-5 border-b border-dashed border-border/70 align-middle bg-stone-50/30 dark:bg-stone-900/10"
+                      >
+                        <div className="flex flex-col items-center justify-center text-center p-4">
+                          <div className="w-10 h-10 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center mb-2.5 text-stone-400">
+                            <Plus className="w-4 h-4" />
+                          </div>
+                          <span className="text-xs font-medium text-muted-foreground mb-3">
+                            Slot Kosong
+                          </span>
+                          <Link
+                            href="/products"
+                            className={cn(
+                              buttonVariants({ variant: "outline", size: "sm" }),
+                              "h-7 px-3 text-[11px] border-border/80"
+                            )}
+                          >
+                            Pilih Produk
+                          </Link>
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+
+                <tbody className="text-xs divide-y divide-border/60">
+                  {/* Category Row */}
+                  <tr>
+                    <th className="p-3.5 sm:p-4 border-r border-border/80 bg-stone-50/70 dark:bg-stone-900/50 font-semibold text-muted-foreground sticky left-0 z-10">
+                      Kategori
+                    </th>
+                    {products.map((product) => (
+                      <td key={product.slug} className="p-3.5 sm:p-4 text-foreground font-medium">
+                        {product.category.name}
                       </td>
-                    );
-                  })}
-                  {Array.from({ length: 4 - products.length }).map((_, i) => <td key={`empty-spec-${specKey}-${i}`} className="p-4 border-b bg-slate-50/50"></td>)}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </main>
-    </div>
-  );
-}
+                    ))}
+                    {Array.from({ length: 4 - products.length }).map((_, i) => (
+                      <td key={`empty-cat-${i}`} className="p-3.5 sm:p-4 bg-stone-50/20"></td>
+                    ))}
+                  </tr>
 
-function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="12" y1="5" x2="12" y2="19"></line>
-      <line x1="5" y1="12" x2="19" y2="12"></line>
-    </svg>
+                  {/* SKU Row */}
+                  <tr>
+                    <th className="p-3.5 sm:p-4 border-r border-border/80 bg-stone-50/70 dark:bg-stone-900/50 font-semibold text-muted-foreground sticky left-0 z-10">
+                      Nomor SKU
+                    </th>
+                    {products.map((product) => (
+                      <td key={product.slug} className="p-3.5 sm:p-4 font-mono text-muted-foreground">
+                        {product.sku}
+                      </td>
+                    ))}
+                    {Array.from({ length: 4 - products.length }).map((_, i) => (
+                      <td key={`empty-sku-${i}`} className="p-3.5 sm:p-4 bg-stone-50/20"></td>
+                    ))}
+                  </tr>
+
+                  {/* Description / Summary Row */}
+                  <tr>
+                    <th className="p-3.5 sm:p-4 border-r border-border/80 bg-stone-50/70 dark:bg-stone-900/50 font-semibold text-muted-foreground align-top sticky left-0 z-10">
+                      Ringkasan
+                    </th>
+                    {products.map((product) => (
+                      <td key={product.slug} className="p-3.5 sm:p-4 text-muted-foreground align-top">
+                        <p className="line-clamp-3 leading-relaxed">
+                          {product.shortDescription || "Tidak ada ringkasan deskripsi."}
+                        </p>
+                      </td>
+                    ))}
+                    {Array.from({ length: 4 - products.length }).map((_, i) => (
+                      <td key={`empty-desc-${i}`} className="p-3.5 sm:p-4 bg-stone-50/20"></td>
+                    ))}
+                  </tr>
+
+                  {/* Technical Specifications Group Header */}
+                  {specKeysArray.length > 0 && (
+                    <tr>
+                      <th
+                        colSpan={5}
+                        className="p-3 border-y border-border/80 bg-stone-100/70 dark:bg-stone-800/60 font-bold text-foreground text-[11px] uppercase tracking-wider"
+                      >
+                        Spesifikasi Teknis
+                      </th>
+                    </tr>
+                  )}
+
+                  {/* Specification Rows */}
+                  {specKeysArray.map((specKey) => (
+                    <tr key={specKey} className="hover:bg-stone-50/50 dark:hover:bg-stone-900/30 transition-colors">
+                      <th className="p-3.5 sm:p-4 border-r border-border/80 bg-stone-50/70 dark:bg-stone-900/50 font-medium text-foreground sticky left-0 z-10">
+                        {specKey}
+                      </th>
+                      {products.map((product) => {
+                        const spec = product.specifications.find((s) => s.key === specKey);
+                        return (
+                          <td key={product.slug} className="p-3.5 sm:p-4 text-foreground">
+                            {spec ? (
+                              spec.value.toLowerCase() === "yes" ||
+                              spec.value.toLowerCase() === "true" ||
+                              spec.value.toLowerCase() === "ya" ? (
+                                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                              ) : spec.value.toLowerCase() === "no" ||
+                                spec.value.toLowerCase() === "false" ||
+                                spec.value.toLowerCase() === "tidak" ? (
+                                <Minus className="w-4 h-4 text-stone-400" />
+                              ) : (
+                                <span className="font-medium">{spec.value}</span>
+                              )
+                            ) : (
+                              <span className="text-stone-300 dark:text-stone-600">-</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                      {Array.from({ length: 4 - products.length }).map((_, i) => (
+                        <td key={`empty-spec-${specKey}-${i}`} className="p-3.5 sm:p-4 bg-stone-50/20"></td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </PageContainer>
+      </main>
+
+      {/* Shared Public Footer */}
+      <PublicFooter />
+    </div>
   );
 }

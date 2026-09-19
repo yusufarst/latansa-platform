@@ -1,22 +1,32 @@
 import { requireRole } from "@/modules/auth/authorization";
 
+export const metadata = {
+  title: "Inventaris | LATANSA Portal Internal",
+};
+
 export default async function InventoryProofPage() {
-  // Enforce server-side RBAC
   await requireRole(["SUPER_ADMIN", "INVENTORY_ADMIN"]);
-  
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
-        <p className="text-muted-foreground text-slate-500">
-          This is a proof-of-concept protected route.
+      <div className="flex flex-col gap-1">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-brand">
+          Manajemen Stok & Gudang
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          Inventaris
+        </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          Modul manajemen inventaris, gudang, dan pergerakan stok.
         </p>
       </div>
 
-      <div className="p-6 bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900 rounded-lg">
-        <h2 className="text-xl font-semibold text-blue-700 dark:text-blue-300 mb-2">Access Granted</h2>
-        <p className="text-blue-600 dark:text-blue-400">
-          You are authenticated and hold a role authorized to view inventory (SUPER_ADMIN or INVENTORY_ADMIN).
+      <div className="p-6 bg-stone-50/80 dark:bg-stone-900/40 border border-border/80 rounded-lg max-w-xl space-y-2">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-brand">
+          Akses Terverifikasi
+        </h2>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Anda memiliki hak akses untuk mengelola inventaris dan stok barang (SUPER_ADMIN / INVENTORY_ADMIN).
         </p>
       </div>
     </div>

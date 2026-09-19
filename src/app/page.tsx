@@ -1,106 +1,278 @@
 import { Metadata } from "next";
-import { LatansaLogo } from "@/components/brand/latansa-logo";
-import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
-import { getPublicProducts } from "@/modules/products/services/public";
+import { getPublicProducts, getPublicCategories } from "@/modules/products/services/public";
 import { PublicProductDTO } from "@/modules/products/validations";
+import { PublicHeader } from "@/components/public/public-header";
+import { PublicFooter } from "@/components/public/public-footer";
+import { PageContainer } from "@/components/public/page-container";
+import { SectionHeading } from "@/components/public/section-heading";
+import { ProductCard } from "@/components/public/product-card";
+import { buttonVariants } from "@/components/ui/button";
+import { MessageSquare, ShieldCheck, Cpu, ArrowRight, Layers, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: 'LATANSA JOGJAKARTA | Premium Electronics & IT Equipment',
-  description: 'Discover our catalog of high-quality electronics, networking gear, and IT solutions for your business.',
+  title: "LATANSA | Platform Pengadaan Perangkat Elektronik & Solusi IT Bisnis",
+  description: "Katalog perangkat elektronik, perlengkapan komputer, dan teknologi informasi profesional untuk kebutuhan operasional bisnis dan institusi.",
 };
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { products } = await getPublicProducts();
+  const [{ products }, categories] = await Promise.all([
+    getPublicProducts(),
+    getPublicCategories(),
+  ]);
+
   const featured = products.filter((p: PublicProductDTO) => p.isFeatured).slice(0, 4);
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/[^0-9]/g, "") || "628111111111";
+
+  const b2bValues = [
+    {
+      icon: <Layers className="w-6 h-6 text-brand stroke-[1.75]" />,
+      title: "Katalog Spesifikasi Terverifikasi",
+      description:
+        "Data teknis, spesifikasi detail, dan nomor model produk disajikan secara transparan dan akurat untuk memudahkan evaluasi pengadaan.",
+    },
+    {
+      icon: <Cpu className="w-6 h-6 text-brand stroke-[1.75]" />,
+      title: "Konsultasi Teknis & Kebutuhan Khusus",
+      description:
+        "Bantuan teknis langsung untuk menyesuaikan spesifikasi perangkat keras dengan beban kerja operasional perusahaan Anda.",
+    },
+    {
+      icon: <ShieldCheck className="w-6 h-6 text-brand stroke-[1.75]" />,
+      title: "Alur Permintaan Penawaran Terstruktur",
+      description:
+        "Dukungan dokumentasi pengadaan B2B, penawaran resmi (RFQ), dan koordinasi pengiriman terjadwal untuk instansi dan korporasi.",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Public Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-slate-900 shadow-sm">
-        <div className="container flex h-16 items-center px-4 md:px-8 mx-auto justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <LatansaLogo width={120} height={40} />
-          </Link>
-          <nav className="hidden md:flex gap-6">
-            <Link href="/" className="text-sm font-medium hover:text-slate-600">Home</Link>
-            <Link href="/products" className="text-sm font-medium hover:text-slate-600">Catalog</Link>
-            <Link href="/compare" className="text-sm font-medium hover:text-slate-600">Compare</Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className={buttonVariants({ variant: "outline" })}>Login</Link>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col selection:bg-brand/15 selection:text-brand">
+      {/* Shared Premium Public Header */}
+      <PublicHeader />
 
       {/* Hero Section */}
-      <section className="bg-slate-900 text-white py-24 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 opacity-90 z-0"></div>
-        <div className="container mx-auto relative z-10 text-center max-w-3xl">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">Premium Electronics for Your Business</h1>
-          <p className="text-lg md:text-xl text-slate-300 mb-10">
-            Discover our curated catalog of high-quality electronics, networking gear, and hardware solutions.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/products" className={buttonVariants({ size: "lg", className: "bg-white text-slate-900 hover:bg-slate-100" })}>Browse Catalog</Link>
-            <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/[^0-9]/g, '') || '628111111111'}`} target="_blank" rel="noopener noreferrer" className={buttonVariants({ size: "lg", variant: "outline", className: "text-slate-900 dark:text-white border-white hover:bg-white/10" })}>Contact Sales</a>
+      <section className="relative pt-16 pb-20 md:pt-24 md:pb-28 border-b border-border/80 overflow-hidden bg-radial from-stone-100/60 to-background dark:from-stone-900/40 dark:to-background">
+        <PageContainer>
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/80 bg-card text-foreground text-xs font-medium shadow-2xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand"></span>
+              Platform Pengadaan Elektronik & Komputer Terpercaya
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.12]">
+              Solusi Perangkat Elektronik & IT untuk Kebutuhan Bisnis
+            </h1>
+
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto font-normal">
+              Katalog terstruktur untuk perangkat keras, perlengkapan jaringan, dan sistem komputasi profesional. Didesain untuk efisiensi pengadaan B2B dan institusi.
+            </p>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <Link
+                href="/products"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "w-full sm:w-auto h-11 px-7 bg-brand hover:bg-brand-hover text-brand-foreground font-semibold text-sm shadow-xs transition-all"
+                )}
+              >
+                Lihat Katalog
+              </Link>
+              <a
+                href={`https://wa.me/${whatsappNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "w-full sm:w-auto h-11 px-7 border-border/80 text-foreground hover:bg-stone-100 dark:hover:bg-stone-800 text-sm font-medium"
+                )}
+              >
+                <MessageSquare className="w-4 h-4 mr-2 text-brand stroke-[2]" />
+                Hubungi Penjualan
+              </a>
+            </div>
+
+            {/* Micro value badges */}
+            <div className="pt-8 flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-xs text-muted-foreground border-t border-border/60">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-brand" />
+                <span>Spesifikasi Teknis Detail</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-brand" />
+                <span>Dukungan Penawaran Resmi (RFQ)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-brand" />
+                <span>Layanan Berbasis Yogyakarta</span>
+              </div>
+            </div>
           </div>
-        </div>
+        </PageContainer>
       </section>
+
+      {/* Featured Categories */}
+      {categories.length > 0 && (
+        <section className="py-14 border-b border-border/80 bg-stone-50/50 dark:bg-stone-900/20">
+          <PageContainer>
+            <SectionHeading
+              badge="Kategori"
+              title="Eksplorasi Berdasarkan Kategori"
+              description="Pilih kategori perangkat yang sesuai dengan kebutuhan operasional kantor atau infrastruktur Anda."
+            />
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+              {categories.map((cat) => (
+                <Link
+                  key={cat.slug}
+                  href={`/products?category=${cat.slug}`}
+                  className="group flex flex-col items-center text-center p-4 rounded-lg border border-border/80 bg-card hover:border-brand/40 hover:shadow-xs transition-all duration-150"
+                >
+                  <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-300 group-hover:text-brand group-hover:bg-brand/10 transition-colors mb-2.5">
+                    <Cpu className="w-5 h-5 stroke-[1.75]" />
+                  </div>
+                  <span className="font-medium text-xs sm:text-sm text-foreground group-hover:text-brand transition-colors line-clamp-1">
+                    {cat.name}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground mt-0.5">
+                    Lihat Produk
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </PageContainer>
+        </section>
+      )}
 
       {/* Featured Products */}
-      <section className="py-20 px-4 container mx-auto">
-        <div className="flex justify-between items-end mb-10">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight mb-2">Featured Products</h2>
-            <p className="text-slate-500">Handpicked selections from our catalog.</p>
-          </div>
-          <Link href="/products" className={buttonVariants({ variant: "link", className: "hidden sm:inline-flex" })}>View All</Link>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featured.map((product: PublicProductDTO) => (
-            <div key={product.slug} className="group relative flex flex-col bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <Link href={`/products/${product.slug}`} className="flex flex-col flex-1 focus:outline-none">
-                <div className="aspect-square bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center p-4">
-                  {product.images?.[0] ? (
-                    <img src={product.images[0].url} alt={product.name} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">No Image</div>
-                  )}
-                </div>
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="text-xs font-medium text-slate-500 mb-1">{product.brand.name}</div>
-                  <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors">{product.name}</h3>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 flex-1">
-                    {product.shortDescription || product.sku}
-                  </p>
-                  <div className="mt-auto flex items-center justify-between">
-                    <span className="font-bold">
-                      {product.publicPrice ? `Rp ${parseInt(product.publicPrice).toLocaleString('id-ID')}` : 'Contact for Price'}
-                    </span>
-                  </div>
-                </div>
+      <section className="py-16 md:py-20 border-b border-border/80">
+        <PageContainer>
+          <SectionHeading
+            badge="Produk Pilihan"
+            title="Perangkat Unggulan untuk Bisnis"
+            description="Pilihan produk terkini dengan spesifikasi lengkap untuk operasional kantor dan industri."
+            action={
+              <Link
+                href="/products"
+                className="hidden sm:inline-flex items-center text-xs font-semibold text-brand hover:underline underline-offset-4"
+              >
+                Lihat Semua Produk &rarr;
               </Link>
-            </div>
-          ))}
+            }
+          />
 
-          {featured.length === 0 && (
-            <div className="col-span-full text-center py-12 text-slate-500">
-              No featured products found. Run the seed script to populate data.
-            </div>
-          )}
-        </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featured.map((product) => (
+              <ProductCard key={product.slug} product={product} />
+            ))}
+
+            {featured.length === 0 && (
+              <div className="col-span-full py-16 text-center border border-dashed border-border rounded-lg bg-stone-50/50">
+                <p className="text-sm text-muted-foreground">
+                  Belum ada produk unggulan yang dipilih.
+                </p>
+                <Link
+                  href="/products"
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-3")}
+                >
+                  Buka Seluruh Katalog
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 text-center sm:hidden">
+            <Link
+              href="/products"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full justify-center text-xs")}
+            >
+              Lihat Semua Produk di Katalog
+            </Link>
+          </div>
+        </PageContainer>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-white dark:bg-slate-950 py-12 border-t">
-        <div className="container mx-auto px-4 text-center text-slate-500 text-sm">
-          &copy; {new Date().getFullYear()} LATANSA Platform. All rights reserved.
-        </div>
-      </footer>
+      {/* B2B Value / Capabilities Section */}
+      <section className="py-16 md:py-24 border-b border-border/80 bg-stone-50/50 dark:bg-stone-900/30">
+        <PageContainer>
+          <div className="max-w-2xl mx-auto text-center space-y-2 mb-14">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-brand">
+              Standar Operasional
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Mengapa LATANSA untuk Pengadaan Perusahaan?
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Alur pengadaan dirancang khusus untuk kenyamanan akurasi teknis dan proses administrasi bisnis.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {b2bValues.map((val, idx) => (
+              <div
+                key={idx}
+                className="p-6 rounded-lg border border-border/80 bg-card shadow-2xs space-y-3"
+              >
+                <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-800 flex items-center justify-center mb-4">
+                  {val.icon}
+                </div>
+                <h3 className="font-semibold text-base text-foreground tracking-tight">
+                  {val.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {val.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </PageContainer>
+      </section>
+
+      {/* Conversion Consultation CTA */}
+      <section className="py-16 bg-background">
+        <PageContainer size="narrow">
+          <div className="border border-border/80 rounded-xl p-8 sm:p-12 text-center bg-stone-50/60 dark:bg-stone-900/40 space-y-5">
+            <span className="text-xs font-semibold text-brand tracking-wider uppercase">
+              Konsultasi Langsung
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Perlu Bantuan Menentukan Spesifikasi Perangkat?
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              Hubungi tim kami untuk konsultasi spesifikasi teknis, ketersediaan unit, atau penjadwalan penawaran harga resmi (RFQ) untuk perusahaan Anda.
+            </p>
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <a
+                href={`https://wa.me/${whatsappNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "w-full sm:w-auto h-11 px-6 bg-brand hover:bg-brand-hover text-brand-foreground text-xs font-semibold shadow-xs"
+                )}
+              >
+                <MessageSquare className="w-4 h-4 mr-2 stroke-[2]" />
+                Chat Tim Penjualan di WhatsApp
+              </a>
+              <Link
+                href="/products"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "w-full sm:w-auto h-11 px-6 text-xs font-medium border-border/80"
+                )}
+              >
+                Buka Katalog Lengkap
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Link>
+            </div>
+          </div>
+        </PageContainer>
+      </section>
+
+      {/* Shared Premium Public Footer */}
+      <PublicFooter />
     </div>
   );
 }

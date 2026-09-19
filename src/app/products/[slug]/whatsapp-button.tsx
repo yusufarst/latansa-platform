@@ -1,24 +1,27 @@
 import Link from "next/link";
-import { MessageCircle } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export default function WhatsAppButton({
-  slug,
-}: {
+interface WhatsAppButtonProps {
   slug: string;
-}) {
+  className?: string;
+}
+
+export default function WhatsAppButton({ slug, className }: WhatsAppButtonProps) {
   return (
-    <Link 
+    <Link
       href={`/api/go/whatsapp/${slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className={buttonVariants({ 
-        size: "lg", 
-        className: "flex-1 md:flex-none h-12 px-8 bg-[#25D366] hover:bg-[#128C7E] text-white shadow-sm font-semibold text-base transition-colors" 
-      })}
+      className={cn(
+        buttonVariants({ size: "lg" }),
+        "flex-1 sm:flex-none h-11 px-6 bg-[#25D366] hover:bg-[#1EBE5D] text-white shadow-xs font-semibold text-xs transition-all flex items-center justify-center gap-2",
+        className
+      )}
     >
-      <MessageCircle className="w-5 h-5 mr-2" /> 
-      Chat on WhatsApp
+      <MessageSquare className="w-4 h-4 fill-current stroke-none" />
+      <span>Chat via WhatsApp</span>
     </Link>
   );
 }

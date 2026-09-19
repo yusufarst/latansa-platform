@@ -5,7 +5,7 @@ test.describe('Public Catalog & Comparison E2E', () => {
     await page.goto('/products');
 
     // Title should be visible
-    await expect(page.locator('h1').filter({ hasText: 'Electronics & IT Equipment Catalog' })).toBeVisible();
+    await expect(page.locator('h1').filter({ hasText: /Katalog Produk & Perangkat Elektronik|Electronics & IT Equipment Catalog/i })).toBeVisible();
 
     // Check that we have products. We shouldn't silently skip assertions if there are no products.
     // The seed script MUST have been run.
@@ -34,10 +34,10 @@ test.describe('Public Catalog & Comparison E2E', () => {
     const compareUrl = `/compare?items=${slugs.join(',')}`;
     await page.goto(compareUrl);
     await page.waitForURL(/.*compare\?items=.*/);
-    await expect(page.locator('h1').filter({ hasText: 'Compare Products' })).toBeVisible();
+    await expect(page.locator('h1').filter({ hasText: /Bandingkan Produk|Compare Products/i })).toBeVisible();
 
     // Check that "Clear Comparison" is visible
-    await expect(page.locator('a', { hasText: 'Clear Comparison' })).toBeVisible();
+    await expect(page.locator('a', { hasText: /Hapus Perbandingan|Clear Comparison/i })).toBeVisible();
   });
 
   test('Product detail page renders correctly and WhatsApp CTA works', async ({ page }) => {
@@ -55,10 +55,10 @@ test.describe('Public Catalog & Comparison E2E', () => {
     await expect(page).toHaveURL(/.*\/products\/.+/);
 
     // The page should have a compare button
-    await expect(page.locator('button[title="Add to Compare"], button[title="Remove from Compare"]')).toBeVisible();
+    await expect(page.locator('button[title="Add to Compare"], button[title="Remove from Compare"]').first()).toBeVisible();
 
     // The page should have a WhatsApp inquiry button
-    const waLink = page.locator('a', { hasText: /Chat on WhatsApp/i });
+    const waLink = page.locator('a', { hasText: /Chat (via|on|di)? WhatsApp/i });
     await expect(waLink).toBeVisible();
 
     // Verify it's a valid link pointing to our API route
@@ -78,7 +78,7 @@ test.describe('Public Catalog & Comparison E2E', () => {
     // Clear filters should be visible if no products found, or just verify URL changed
     // Let's just click a category link instead
     await page.goto('/products');
-    const categoryLink = page.locator('h3:has-text("Categories") + ul a').nth(1);
+    const categoryLink = page.locator('aside h3:has-text("Kategori") + ul a, aside h3:has-text("Categories") + ul a, h3:has-text("Categories") + ul a, h3:has-text("Kategori") + ul a').nth(1);
     // check cat
     await categoryLink.click();
 

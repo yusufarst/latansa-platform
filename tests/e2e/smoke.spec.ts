@@ -9,5 +9,5 @@ test('has title', async ({ page }) => {
 test('renders logo', async ({ page }) => {
   await page.goto('/');
   // Expect the brand logo to be visible
-  await expect(page.locator('img[alt="LATANSA Platform Logo"]')).toBeVisible();
+  await expect(page.locator('img[alt="LATANSA Platform Logo"]').first()).toBeVisible();
 });

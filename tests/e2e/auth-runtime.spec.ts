@@ -27,25 +27,25 @@ test.describe('Auth Runtime', () => {
 
     // 5. verify authenticated dashboard content renders
     // Expect some common dashboard element to be visible
-    await expect(page.locator('h1').filter({ hasText: /Dashboard/i })).toBeVisible();
+    await expect(page.locator('h1').filter({ hasText: /Dashboard|Dasbor/i })).toBeVisible();
 
     // 6. navigate to /internal/inventory
     await page.goto('/internal/inventory');
 
     // 7. SUPER_ADMIN must be allowed
     // Expect heading to contain Inventory
-    await expect(page.locator('h1').filter({ hasText: /Inventory/i })).toBeVisible();
+    await expect(page.locator('h1').filter({ hasText: /Inventory|Inventaris/i })).toBeVisible();
 
     // 8. navigate to /internal/products
     await page.goto('/internal/products');
 
     // 9. SUPER_ADMIN must be allowed
     // Expect heading to contain Products
-    await expect(page.locator('h1').filter({ hasText: /Products/i })).toBeVisible();
+    await expect(page.locator('h1').filter({ hasText: /Products|Produk/i })).toBeVisible();
 
     // 10. logout
     // Assume there is a logout button with text Logout
-    await page.click('button:has-text("Logout"), a:has-text("Logout")');
+    await page.click('button:has-text("Logout"), a:has-text("Logout"), button:has-text("Keluar"), a:has-text("Keluar")');
 
     // 11. verify redirected to /login
     await expect(page).toHaveURL(/\/login$/);

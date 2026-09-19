@@ -27,7 +27,7 @@ test.describe('Admin User Journey', () => {
       await expect(page.locator('input[type="email"]')).toBeVisible();
       await page.fill('input[type="email"]', email!);
       await page.fill('input[type="password"]', password!);
-      await page.getByRole('button', { name: /sign in/i }).click();
+      await page.getByRole('button', { name: /sign in|masuk/i }).click();
 
       await Promise.race([
         page.waitForURL('**/internal**', { timeout: 10000 }),
@@ -42,7 +42,7 @@ test.describe('Admin User Journey', () => {
     await expect(page).toHaveURL(/.*\/internal\/products/);
 
     // 3. Create a Product
-    await page.click('text=Add Product');
+    await page.click('text=/Add Product|Tambah Produk/i');
 
     // Fill the form
     const uniqueId = Date.now();

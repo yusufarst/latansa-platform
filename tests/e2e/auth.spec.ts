@@ -6,12 +6,12 @@ test.describe('Authentication & RBAC DB-independent E2E', () => {
     
     // Branding
     await expect(page.getByAltText(/LATANSA Platform Logo/i)).toBeVisible();
-    await expect(page.getByRole('heading', { name: /Welcome Back/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Welcome Back|Masuk/i })).toBeVisible();
 
     // Form fields
-    await expect(page.getByLabel(/Email address/i)).toBeVisible();
-    await expect(page.getByLabel(/Password/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /Sign in/i })).toBeVisible();
+    await expect(page.getByLabel(/Email address|Alamat Email/i)).toBeVisible();
+    await expect(page.getByLabel(/Password|Kata Sandi/i)).toBeVisible();
+    await expect(page.getByRole('button', { name: /Sign in|Masuk/i })).toBeVisible();
   });
 
   test('unauthenticated internal access redirects to login', async ({ page }) => {
@@ -47,6 +47,6 @@ test.describe('Authentication & RBAC DB-independent E2E', () => {
     const boundingBox = await formContainer.boundingBox();
     expect(boundingBox?.width).toBeLessThanOrEqual(375);
     
-    await expect(page.getByLabel(/Email address/i)).toBeVisible();
+    await expect(page.getByLabel(/Email address|Alamat Email/i)).toBeVisible();
   });
 });
