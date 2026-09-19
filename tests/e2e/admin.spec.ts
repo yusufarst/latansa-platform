@@ -70,15 +70,22 @@ test.describe('Admin User Journey', () => {
     await specKeyInputs.last().fill('E2E Spec');
     const specValueInputs = page.locator('input[placeholder="Value (e.g. 10 cm)"]');
     await specValueInputs.last().fill('E2E Value');
-    await page.click('button:has-text("Save Changes")');
-    await page.waitForTimeout(1000);
+    await Promise.all([
+      page.waitForResponse(resp => resp.request().method() === 'POST' && resp.status() === 200),
+      page.click('button:has-text("Save Changes")')
+    ]);
 
     // 4. Publish
     const publishButton = page.locator('button:has-text("Publish Product")');
-    if (await publishButton.count() > 0) {
-      await publishButton.click();
-      await page.waitForTimeout(1000);
-    }
+    await expect(publishButton).toBeVisible();
+    await Promise.all([
+      page.waitForResponse(resp => resp.request().method() === 'POST' && resp.status() === 200),
+      publishButton.click()
+    ]);
+    
+    // Wait for the button to switch to "Archive Product"
+    const archiveButton = page.locator('button:has-text("Archive Product")');
+    await expect(archiveButton).toBeVisible();
 
     // 5. Verify public visibility
     // The slug should be e2e-test-product-uniqueId
@@ -94,11 +101,15 @@ test.describe('Admin User Journey', () => {
     await productLink.click();
     await page.waitForURL(/.*\/internal\/products\/.+/);
 
-    const archiveButton = page.locator('button:has-text("Archive Product")');
-    if (await archiveButton.count() > 0) {
-      await archiveButton.click();
-      await page.waitForTimeout(1000);
-    }
+    const archiveButtonStatus = page.locator('button:has-text("Archive Product")');
+    await expect(archiveButtonStatus).toBeVisible();
+    await Promise.all([
+      page.waitForResponse(resp => resp.request().method() === 'POST' && resp.status() === 200),
+      archiveButtonStatus.click()
+    ]);
+    
+    // Wait for the button to switch back to "Publish Product"
+    await expect(page.locator('button:has-text("Publish Product")')).toBeVisible();
 
     // 7. Verify public invisibility
     await page.goto(`/products/e2e-test-product-${uniqueId}`);

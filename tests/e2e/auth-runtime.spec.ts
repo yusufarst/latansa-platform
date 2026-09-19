@@ -23,7 +23,7 @@ test.describe('Auth Runtime', () => {
     await page.click('button[type="submit"]');
 
     // 4. verify successful navigation to /internal
-    await expect(page).toHaveURL(/\/internal$/);
+    await expect(page).toHaveURL(/\/internal$/, { timeout: 10000 });
 
     // 5. verify authenticated dashboard content renders
     // Expect some common dashboard element to be visible

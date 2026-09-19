@@ -5,9 +5,20 @@ import { eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
-const baseUrl = process.env.PUBLIC_SITE_URL || process.env.APP_URL || 'http://localhost:3000';
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const isProd = process.env.NODE_ENV === 'production';
+  let baseUrl = process.env.PUBLIC_SITE_URL;
+
+  if (!baseUrl) {
+    if (isProd) {
+      throw new Error('Configuration Error: PUBLIC_SITE_URL is required in production environment for sitemap generation.');
+    }
+    baseUrl = process.env.APP_URL || 'http://localhost:3000';
+  }
+
+  // Remove trailing slash if present
+  baseUrl = baseUrl.replace(/\/$/, '');
+
   // Base static routes
   const routes = [
     '',
